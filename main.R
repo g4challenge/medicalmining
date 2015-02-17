@@ -15,36 +15,34 @@ netDoktorScraper <- function(url){
               #,text=paste(text,collapse="|")))
 }
 
-url <- "board.netdoktor.de"
 
-netDoktorScraper("board.netdoktor.de")
 
 scrapeThematic <- function(url, postfix){
-  SOURCE <-  getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
+  SOURCE <- getURL(paste(url, "/", postfix, sep=""),encoding="UTF-8") # Specify encoding when dealing with non-latin characters
   PARSED <- htmlParse(SOURCE)
   ## scroll through threads
   nextPage <- xpathSApply(PARSED, "//div[@class='pageNavArrowsRight']/a/@href")
   previous <- NULL
-  if(!is.null(nextPage)){previous <- scrapeThematic(url, postfix + nextPage)}
+  if(!is.null(nextPage)){previous <- scrapeThematic(url, nextPage[1])}
   
-  title <- xpathSApply(PARSED, "//span[contains(@itemprop,'itemListElement')]",xmlValue)
-  link <- xpathSApply(PARSED, "//span[contains(@itemprop, 'itemListElement')]/a/@href")
-  
-  ### call for each thread
-  
+  title <- xpathSApply(PARSED, "//div[@class='title']/a[contains(@itemprop, 'itemListElement')]",xmlValue)
+  link <- xpathSApply(PARSED, "//div[@class='title']/a[contains(@itemprop, 'itemListElement')]/@href")
+  print(title)
+  return(list(title=c(title, previous$title),
+              link=c(link, previous$link)))
 }
 
 scrapeContent <- function(url){
   SOURCE <-  getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
   PARSED <- htmlParse(SOURCE)
   
-  title <- xpathSApply(PARSED, "//div[@class='titleBar']/h1")
+  title <- xpathSApply(PARSED, "//div[@class='titleBar']/h1", xmlValue)
   
   author <- xpathSApply(PARSED, "//div[@class='userText']/a", xmlValue)
   text <- xpathSApply(PARSED, "//div[@class='messageContent']/article/blockquote", xmlValue)
   date <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/span[@class='DateTime']/@title")
   relatedEntries <- xpathSApply(PARSED, "//div[@class='title']/a/@href")
-  return(list(title=tile,
+  return(list(title=title,
               author=author,
               text=text,
               date=date,
