@@ -1,5 +1,6 @@
 
 getDocument <- function(content){
+  #print(str(content))
   clearcontent <- content[-1]
   contentTitle <- as.vector(unlist(content[1]))
   ### remove related entries
@@ -22,7 +23,8 @@ getDocument <- function(content){
                          # stop("error")
                         },
                       warning = function(w){
-                        print(w)
+                        #print(w)
+                        print(contentTitle)
                         print(clearcontent)
                         data.frame(matrix(unlist(clearcontent), nrow=3, byrow = T), stringsAsFactors = F)
                       }
@@ -45,7 +47,7 @@ getAllDocumentsofThematic <- function(df.threads){
     #j <- 4
     content <- scrapeContent(paste(url,"/" ,df.threads[2,j], sep=""))
     doc <- getDocument(content)
-    print(doc)
+    #print(doc)
     title.list <- c(title.list, doc[1])
     doc.list <- c(doc.list, doc[2])
   }

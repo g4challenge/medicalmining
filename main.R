@@ -27,7 +27,7 @@ scrapeThematic <- function(url, postfix){
   
   title <- xpathSApply(PARSED, "//div[@class='title']/a[contains(@itemprop, 'itemListElement')]",xmlValue)
   link <- xpathSApply(PARSED, "//div[@class='title']/a[contains(@itemprop, 'itemListElement')]/@href")
-  print(title)
+  #print(title)
   return(list(title=c(title, previous$title),
               link=c(link, previous$link)))
 }
@@ -39,8 +39,35 @@ scrapeContent <- function(url){
   title <- xpathSApply(PARSED, "//div[@class='titleBar']/h1", xmlValue)
   
   author <- xpathSApply(PARSED, "//div[@class='userText']/a", xmlValue)
+  entrycount <- length(author)
+  ## introduce length control for text date and author
   text <- xpathSApply(PARSED, "//div[@class='messageContent']/article/blockquote", xmlValue)
+  textcount <- length(text)
+  
+  ### Attention order is incorrect
+  if(entrycount < textcount){
+    author <- c(author, xpathSApply(PARSED, "//div[@class='userText']/span", xmlValue))
+    entrycount <- length(author)
+  }
+  
   date <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/span[@class='DateTime']/@title")
+  
+  if(length(date) != entrycount){
+    datestring <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/abbr[@class='DateTime']/@data-datestring")
+    timestring <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/abbr[@class='DateTime']/@data-timestring")
+    if(is.null(datestring)) date <- rep(0, entrycount)
+    else{
+    for(i in 1:(entrycount - length(date))){
+      date <- c(date, paste(datestring[i], " um ", timestring[i], " Uhr", sep=""))
+    print(datestring[i])
+    print(timestring[i])
+    }
+    #print(date)
+    if(length(date)!= entrycount){
+      print("error")
+    }
+  }
+  }
   relatedEntries <- xpathSApply(PARSED, "//div[@class='title']/a/@href")
   return(list(title=title,
               author=author,

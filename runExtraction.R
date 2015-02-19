@@ -10,7 +10,7 @@ df.threads <- data.frame(matrix(unlist(threads), nrow=2, byrow=T), stringsAsFact
 
 docs <- getAllDocumentsofThematic(df.threads)
 
-docs <- getAllDocumentsofThematic(df.threads[, 1:100])
+docs <- getAllDocumentsofThematic(df.threads[, 1:50])
 
 url <- "board.netdoktor.de/beitrag/auf-einem-auge-heller-sehen-wie-kommt-das.249825/"
 scrapeContent(url)
