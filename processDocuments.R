@@ -1,5 +1,6 @@
 
 getDocument <- function(content){
+  if(content =="") return(c("", ""))
   #print(str(content))
   clearcontent <- content[-1]
   contentTitle <- as.vector(unlist(content[1]))

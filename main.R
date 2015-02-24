@@ -33,7 +33,13 @@ scrapeThematic <- function(url, postfix){
 }
 
 scrapeContent <- function(url){
-  SOURCE <-  getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
+  SOURCE <-  tryCatch({
+      getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
+      }, error = function(e){
+        print(e)
+        return("")
+      })
+  if(SOURCE =="") return("")
   PARSED <- htmlParse(SOURCE)
   
   title <- xpathSApply(PARSED, "//div[@class='titleBar']/h1", xmlValue)

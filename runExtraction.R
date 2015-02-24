@@ -14,3 +14,8 @@ docs <- getAllDocumentsofThematic(df.threads[, 1:50])
 
 url <- "board.netdoktor.de/beitrag/auf-einem-auge-heller-sehen-wie-kommt-das.249825/"
 scrapeContent(url)
+
+
+### Augencontent
+
+write.csv(docs, file="augen2015-2-23.csv", sep="|", fileEncoding="UTF-8")
