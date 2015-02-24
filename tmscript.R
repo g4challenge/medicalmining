@@ -86,15 +86,32 @@ vocab <- opt@terms
 
 # Get the phi matrix using LDAviz
 dat <- getProbs(token.id, doc.id, topic.id, vocab, K = max(topic.id), sort.topics = "byTerms")
-phi <- t(dat$phi.hat)
+phi <- (dat$phi.hat)
+theta<- (dat$theta.hat)
 # NOTE TO SELF: these things have to be numeric vectors or else runVis() will break...add a check in check.inputs
 token.frequency <- as.numeric(table(token.id))
 topic.id <- dat$topic.id
 topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
 
 ### Get doc.length
-
-
+lastDoc <- 1
+doc.length <- c()
+count <- 0
+for(i in 1:length(doc.id)){
+  if(doc.id[i]==lastDoc){
+    count <- count +1
+  }
+  else{
+    doc.length <- c(doc.length, count)
+    count <- 0
+    lastDoc <- doc.id[i]
+  }
+  
+  if(i==length(doc.id)){  
+    doc.length <- c(doc.length,count)
+    count <- 0
+  }
+}
 
 # Run the visualization locally using LDAvis
 z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
