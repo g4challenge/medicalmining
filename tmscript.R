@@ -92,13 +92,17 @@ token.frequency <- as.numeric(table(token.id))
 topic.id <- dat$topic.id
 topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
 
+### Get doc.length
+
+
+
 # Run the visualization locally using LDAvis
 z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
 with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
 
 library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
 
-json <- createJSON(phi, theta, doc.length, vocab, term.frequency)
+json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
 
 json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
                            vocab, topic.proportion))
