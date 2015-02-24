@@ -48,15 +48,24 @@ iter <- 1000
 keep <- 50
 ks <- seq(20, 40, by = 1)
 
+ktemp <-20
 ### Parallel
 library(parallel)
 
 # Calculate the number of cores
 no_cores <- detectCores() - 1
 
+LDAt <- get("LDA")
 # Initiate cluster
 cl <- makeCluster(no_cores)
-models <- parLapply(cl, ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep))
+clusterExport(cl, "dtm.new")
+clusterExport(cl, "burnin")
+clusterExport(cl, "iter")
+clusterExport(cl, "keep")
+clusterExport(cl, "LDAt")
+models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
+
+stopCluster(cl)
 
 models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
@@ -89,6 +98,7 @@ with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
 
 library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
 
+json <- createJSON(phi, theta, doc.length, vocab, term.frequency)
 
 json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
                            vocab, topic.proportion))
