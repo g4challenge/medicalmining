@@ -1,8 +1,9 @@
 ---
 title: "Topic Modelling of a Medical Online Board"
 author: "Lukas Huber"
-date: "19. Februar 2015"
+date: "19. February 2015"
 output: html_document
+bibliography: literature.bib
 ---
 
 #Abstract
@@ -10,19 +11,20 @@ output: html_document
 #Introduction
 The information about diseases found online can be investigated and analyzed to create new insights.
 
-But the content is human readable in an online board, where people are disscussing their sickness and others share their knowledge or story and give recommendations. 
+But the content is human readable in an online board, where people are discussing their sickness and others share their knowledge or story and give recommendations. 
 
 The challenge is to analyze the free text in a way to use the huge amount of data further on.
 
-The Goal of this paper is to show the process of collecting the information, finding the models, and look at the topic modelled result.
-Web Scraping
-LDA
-Topic Modells
-Gibbs Sampling
-
+The Goal of this paper is to show the process of collecting the information, finding the models, and look at the topic modeled result.
+##Web Scraping
+##LDA
+##Topic Models
+[@Grun2011]
+##Gibbs Sampling
+@Sievert2014
 #Methods
 Data collection
-
+[@Rolf]
 #Results
 
 #Discussion
@@ -44,3 +46,5 @@ plot(cars)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# References
