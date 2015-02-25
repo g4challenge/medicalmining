@@ -13,12 +13,13 @@ library(tm)
 library(Rmpfr)
 library(elife)
 library(SnowballC)
+library(stringr)
 
 
 
 #Preprocess the text and convert to document-term matrix
 dtm.control <- list(
-  tolower = F,
+  tolower = T,
   removePunctuation = TRUE,
   removeNumbers = TRUE,
   stopwords = stopwords("de"),
@@ -26,7 +27,7 @@ dtm.control <- list(
   weighting = weightTf
 )
 
-corp <- VCorpus(VectorSource(docs))
+corp <- VCorpus(VectorSource(docs.cleared))
 dtm <- DocumentTermMatrix(corp, control = dtm.control)
 dim(dtm)
 dtm <- removeSparseTerms(dtm, 0.99)
@@ -43,10 +44,10 @@ harmonicMean <- function(logLikelihoods, precision = 2000L) {
   as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
                                        prec = precision) + llMed))))
 }
-burnin <- 1000
-iter <- 1000
+burnin <- 100
+iter <- 100
 keep <- 50
-ks <- seq(20, 40, by = 1)
+ks <- seq(20, 80, by = 1)
 
 ktemp <-20
 ### Parallel

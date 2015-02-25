@@ -55,3 +55,6 @@ getAllDocumentsofThematic <- function(df.threads){
   return(doc.list)
 }
 
+clearNE <- function(doc){
+  str_replace_all(string = doc, pattern = "NEXTENTRY", replacement = " ")
+}
