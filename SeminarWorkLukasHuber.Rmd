@@ -14,26 +14,42 @@ The information about diseases found online can be investigated and analyzed to 
 But the content is human readable in an online board, where people are discussing their sickness and others share their knowledge or story and give recommendations. 
 
 The challenge is to analyze the free text in a way to use the huge amount of data further on.
+Topic modeling is a type of statistical model to discover abstract "topics" in a collection of documents.
 
 The Goal of this paper is to show the process of collecting the information, finding the models, and look at the topic modeled result.
+
+##Terms
+- A *word* is the basic discrete unit from a *vocabulary* indexed {1,...,V}
+- A *document* is a sequence of *N* words **w** = _(w~1~,w~2~,...,w~n~)_
+- A *corpus* is a collection of *M* documents **D**= _(**w**~1~,**w**~2~,...,**w**~m~)_
+
+
 ##Web Scraping
-##LDA
+
 ##Topic Models
+
+##Latent Dirichlet allocation
+Latent Dirichlet allocation (LDA) is a generative probabilistic model of a corpus. LDA is a generalization of *PLSI* (Probabilistic latent semantic indexing [@Hofmann1999])
+
+[@Blei2012a]
+
+
 [@Grun2011]
-##Gibbs Sampling
-@Sievert2014
+
+
 #Methods
 Data collection
 [@Rolf]
+Bayesian model selection
+
 #Results
 
 #Discussion
-
+Word position and sturcture is not covered, only counts are important.
 The use of meta data like author, date, can show connections between topics and authors, as well as the relation between the documents.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Pachinko allocation
+better stopwords
 
 ```{r}
 summary(cars)

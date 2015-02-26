@@ -76,15 +76,33 @@ img {
 <h1>Introduction</h1>
 <p>The information about diseases found online can be investigated and analyzed to create new insights.</p>
 <p>But the content is human readable in an online board, where people are discussing their sickness and others share their knowledge or story and give recommendations.</p>
-<p>The challenge is to analyze the free text in a way to use the huge amount of data further on.</p>
-<p>The Goal of this paper is to show the process of collecting the information, finding the models, and look at the topic modeled result. ##Web Scraping ##LDA ##Topic Models <span class="citation">(Grün and Hornik 2011)</span> ##Gibbs Sampling <span class="citation">Sievert and Shirley (2014)</span> #Methods Data collection</p>
+<p>The challenge is to analyze the free text in a way to use the huge amount of data further on. Topic modeling is a type of statistical model to discover abstract “topics” in a collection of documents.</p>
+<p>The Goal of this paper is to show the process of collecting the information, finding the models, and look at the topic modeled result.</p>
+<div id="terms" class="section level2">
+<h2>Terms</h2>
+<ul>
+<li>A <em>word</em> is the basic discrete unit from a <em>vocabulary</em> indexed {1,…,V}</li>
+<li>A <em>document</em> is a sequence of <em>N</em> words <strong>w</strong> = <em>(w<sub>1</sub>,w<sub>2</sub>,…,w<sub>n</sub>)</em></li>
+<li>A <em>corpus</em> is a collection of <em>M</em> documents <strong>D</strong>= <em>(<strong>w</strong><sub>1</sub>,<strong>w</strong><sub>2</sub>,…,<strong>w</strong><sub>m</sub>)</em></li>
+</ul>
 </div>
-<div id="results" class="section level1">
-<h1>Results</h1>
+<div id="web-scraping" class="section level2">
+<h2>Web Scraping</h2>
+</div>
+<div id="latent-dirichlet-allocation" class="section level2">
+<h2>Latent Dirichlet allocation</h2>
+<p>Latent Dirichlet allocation (LDA) is a generative probabilistic model of a corpus. LDA is a generalization of <em>PLSI</em> (Probabilistic latent semantic indexing <span class="citation">(Hofmann 1999)</span>)</p>
+<p><span class="citation">(Blei, Ng, and Jordan 2012)</span> ##Topic Models <span class="citation">(Grün and Hornik 2011)</span></p>
+</div>
+</div>
+<div id="methods" class="section level1">
+<h1>Methods</h1>
+<p>Data collection</p>
+<p>Bayesian model selection <span class="citation">(Rolf 2015)</span> #Results</p>
 </div>
 <div id="discussion" class="section level1">
 <h1>Discussion</h1>
-<p>The use of meta data like author, date, can show connections between topics and authors, as well as the relation between the documents.</p>
+<p>Word position and sturcture is not covered, only counts are important. The use of meta data like author, date, can show connections between topics and authors, as well as the relation between the documents.</p>
 <p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com">http://rmarkdown.rstudio.com</a>.</p>
 <p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
 <pre class="r"><code>summary(cars)</code></pre>
@@ -100,8 +118,10 @@ img {
 <p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
 <div class="references">
 <h1>References</h1>
+<p>Blei, David M, Andrew Y Ng, and Michael I Jordan. 2012. “Latent Dirichlet Allocation.” <em>Journal of Machine Learning Research</em> 3: 993–1022. doi:<a href="http://dx.doi.org/10.1162/jmlr.2003.3.4-5.993">10.1162/jmlr.2003.3.4-5.993</a>. <a href="http://www.cs.princeton.edu/~blei/lda-c/$\backslash$npapers2://publication/doi/10.1162/jmlr.2003.3.4-5.993$\backslash$npapers2://publication/uuid/4001D0D9-4F9C-4D8F-AE49-46ED6A224F4A$\backslash$npapers2://publication/uuid/7D10D5DA-B421-4D94-A3ED-028107B7F9B6$\backslash$nhttp://www.crossref.org/jmlr">http://www.cs.princeton.edu/~blei/lda-c/$\backslash$npapers2://publication/doi/10.1162/jmlr.2003.3.4-5.993$\backslash$npapers2://publication/uuid/4001D0D9-4F9C-4D8F-AE49-46ED6A224F4A$\backslash$npapers2://publication/uuid/7D10D5DA-B421-4D94-A3ED-028107B7F9B6$\backslash$nhttp://www.crossref.org/jmlr</a>.</p>
 <p>Grün, Bettina, and Kurt Hornik. 2011. “topicmodels : An R Package for Fitting Topic Models.” <em>Journal of Statistical Software</em> 40 (13). American Statistical Association: 1–30. <a href="http://kortan.sote.hu/ftp/mirrors/CRAN/web/packages/topicmodels/vignettes/topicmodels.pdf">http://kortan.sote.hu/ftp/mirrors/CRAN/web/packages/topicmodels/vignettes/topicmodels.pdf</a>.</p>
-<p>Sievert, C, and KE Shirley. 2014. “LDAvis: A Method for Visualizing and Interpreting Topics.” <em>Sponsor: Idibon</em>. <a href="http://www.aclweb.org/anthology/W/W14/W14-31.pdf\#page=73">http://www.aclweb.org/anthology/W/W14/W14-31.pdf\#page=73</a>.</p>
+<p>Hofmann, Thomas. 1999. “Probabilistic Latent Semantic Indexing.” In <em>SIGIR</em>, 50–57. doi:<a href="http://dx.doi.org/10.1145/312624.312649">10.1145/312624.312649</a>. <a href="http://portal.acm.org/citation.cfm?doid=312624.312649">http://portal.acm.org/citation.cfm?doid=312624.312649</a>.</p>
+<p>Rolf, Fredheim. 2015. “Quantifying Memory: Web-Scraping: the Basics.” <em>University of Cambridge</em>. Accessed February 25. <a href="http://quantifyingmemory.blogspot.co.uk/2014/02/web-scraping-basics.html">http://quantifyingmemory.blogspot.co.uk/2014/02/web-scraping-basics.html</a>.</p>
 </div>
 </div>
 

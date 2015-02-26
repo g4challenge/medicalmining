@@ -3,17 +3,36 @@ Topic Modelling of Medical Discussions
 author: Lukas Huber
 date: March 2nd 2015
 
-First Slide
+Motivation
 ========================================================
 
-For more details on authoring R presentations click the
-**Help** button on the toolbar.
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
 
-Slide With Code
+Content
+========================================================
+
+Web Scraping
+========================================================
+
+
+Terms
+========================================================
+- A *word* is the basic discrete unit from a *vocabulary* indexed {1,...,V}
+- A *document* is a sequence of *N* words $\mathbf{w} = (w_{1},w_{2},...,w_{n})$
+- A *corpus* is a collection of *M* documents $\mathbf{D}= (\mathbf{w_{1}},\mathbf{w_{2}},...,\mathbf{w_{m}})$
+
+Topic Modeling
+========================================================
+![XCKD comic sievert](xckd comic tm.png)
+***
+
+Latent Dirichlet allocation
+========================================================
+
+Content
+========================================================
+
+Content
 ========================================================
 
 
@@ -31,7 +50,15 @@ summary(cars)
  Max.   :25.0   Max.   :120.00  
 ```
 
-Slide With Plot
+Final Product
 ========================================================
 
-![plot of chunk unnamed-chunk-2](TM Lukas Huber 2015-figure/unnamed-chunk-2-1.png) 
+
+
+```
+processing file: TM Lukas Huber 2015.Rpres
+Loading required namespace: servr
+serving the directory nurs_lda at http://localhost:4321
+Quitting from lines 46-49 (TM Lukas Huber 2015.Rpres) 
+Fehler in startServer(host, port, app) : Failed to create server
+```
