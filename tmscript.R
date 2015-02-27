@@ -52,17 +52,16 @@ ks <- seq(20, 80, by = 1)
 ktemp <-20
 ### Parallel
 library(parallel)
-
 # Calculate the number of cores
 no_cores <- detectCores() - 1
 
 LDAt <- get("LDA")
 # Initiate cluster
 cl <- makeCluster(no_cores)
-clusterExport(cl, "dtm.new")
-clusterExport(cl, "burnin")
-clusterExport(cl, "iter")
-clusterExport(cl, "keep")
+clusterExport(cl, "dtm.new") # Document term matrix
+clusterExport(cl, "burnin") # burnin default 1000
+clusterExport(cl, "iter") # iter default 1000
+clusterExport(cl, "keep") # keep default 50
 clusterExport(cl, "LDAt")
 models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 
@@ -115,13 +114,13 @@ for(i in 1:length(doc.id)){
 }
 
 # Run the visualization locally using LDAvis
-z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
-with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
+#z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
+#with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
 
-library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
+#library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
 
 json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
 
-json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
-                           vocab, topic.proportion))
+#json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
+#                           vocab, topic.proportion))
 serVis(json, out.dir="nurs_lda", open.browser = T)
