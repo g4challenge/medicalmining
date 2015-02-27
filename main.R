@@ -1,5 +1,6 @@
 library(RCurl)
 library(XML)
+library(stringr)
 netDoktorScraper <- function(url){
   SOURCE <-  getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
   PARSED <- htmlParse(SOURCE)

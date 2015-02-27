@@ -23,7 +23,7 @@ dtm.control <- list(
   removePunctuation = TRUE,
   removeNumbers = TRUE,
   stopwords = stopwords("de"),
-  stemming = F,
+  stemming = T,
   weighting = weightTf
 )
 
@@ -68,7 +68,7 @@ models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = "Gibbs", contr
 
 stopCluster(cl)
 
-models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
+#models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
 hm <- sapply(logLiks, function(h) harmonicMean(h))
 

@@ -18,4 +18,4 @@ scrapeContent(url)
 docs.cleared <- lapply(docs, clearNE)
 ### Augencontent
 
-write.csv(docs, file="augen2015-2-23.csv", sep="|", fileEncoding="UTF-8")
+write.csv(docs.cleared, file="augen2015-2-25.csv", sep="|", fileEncoding="UTF-8")
