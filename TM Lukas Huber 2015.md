@@ -20,12 +20,19 @@ Content
 - Latent Dirichlet allocation
 - Optimization of topics
 - Data collection and preprocessing
-- 
+- Demonstration
 
 
 Web Scraping
 ========================================================
-- Data generated from web content
+- Extracting information from Websites
+- transformation of unstructured data (e.g. HTML)
+- URL manipulation
+- XPath to query XML 
+
+```r
+head(xpathSApply(PARSED, "//span[@class='citation news']/a/@href"))
+```
 
 Terms
 ========================================================
@@ -51,25 +58,65 @@ language (green)
  
 Latent Dirichlet allocation
 ========================================================
+- random variable $w_i$ denotes the ith-token $i \in \{1,...,N\}$
+- for vocabulary size $v \in \{1,...,V\}$
+- probability of observing word $i$ ind document $d_i$:
+$P(w_i = v) = \sum_{j=1}^T P(w_i = v | z_i = j)P(z_i = j)$
+
+where $z_i \in \{1,...,T\}$ for a given number of topics *T*
+- probability term-topic matrix $\phi_i^{(j)} = P(w_i = v | z_i = j)$
+  - *V* by *T* where $j^{th}$ column prob. dist. over words for topic *j*
+- probability topic-document $\theta_j^{(d_i)} = P(z_i = j)$
+  - *T* by *D* where $d^{th}$ column contains topic prob. for document *d*
+
+Latent Dirichlet allocation cont.
+========================================================
+![lda](Latent_Dirichlet_allocation.svg.png)
+- $\alpha$ is the parameter of the Dirichlet prior on the per-document topic distributions
+- $\beta$ is the parameter of the Dirichlet prior on the per-topic word distribution,
+
+***
+
+- $\theta_i$ is the topic distribution for document *i*
+- $\phi_k$  is the word distribution for topic *k*
+- $z_{ij}$ is the topic for the $j^{th}$ word in document *i*
+- $w_{ij}$ is the specific word
 
 Optimize number of topics
 ========================================================
+Given hyperparameters $\alpha$ and $\beta$ find optimal number of topics via Bayesian model selection
+
+$\max_T\{ p(T| \textbf{w}) \} = \max_T\{ p(\textbf{w}|T)p(T) \}$
+
+Using a uniform prior for $p(T)$, we have $\max_T p(w|T)$. Unfortunately, computing $p(w|T)$ requires summing over all possible assignments of words to topics which is often unfeasible. Griffiths & Steyvers suggest approximating $p(w|T)$ via a harmonic mean estimator:
+
+$p(w|T) \approx (\frac{1}{M} \sum^M_{m=1} p(\textbf{w} | \textbf{z}_m, T)^{-1})^{-1}$
+
+where $\mathbf{z}_m$ is the $m^{th}$ sample from the posterior $p(\mathbf{z}|\mathbf{w}, T)$
 
 Data collection and preprocessing
 ========================================================
 
+Acquire the documents from one thematic
 
 ```r
 url <- "board.netdoktor.de"
 thematics <- netDoktorScraper(url)
 ```
-Acquire the documents from one thematic
+Get all documents and clear them
 
 ```r
 docs <- getAllDocumentsofThematic(df.threads)
 docs.cleared <- lapply(docs, clearNE)
 ```
-Get all documents and clear them
+Example scraping
+
+```r
+SOURCE <-  getURL(url,encoding="UTF-8")
+PARSED <- htmlParse(SOURCE)
+title <- xpathSApply(PARSED, "//span[contains(@itemprop,'itemListElement')]",xmlValue)
+link <- xpathSApply(PARSED, "//span[contains(@itemprop, 'itemListElement')]/a/@href")
+```
 
 Document term-matrice 
 ========================================================
@@ -141,12 +188,26 @@ Final Product
 ========================================================
 
 
-
-
+```r
+library(LDAvis)
+load("lda.Rdata")
+serVis(json, out.dir="nurs_lda", open.browser = T)
 ```
-processing file: TM Lukas Huber 2015.Rpres
-Loading required namespace: servr
-serving the directory nurs_lda at http://localhost:4321
-Quitting from lines 139-142 (TM Lukas Huber 2015.Rpres) 
-Fehler in startServer(host, port, app) : Failed to create server
-```
+
+Discussion
+=========================================================
+- extend the list of stop words
+- better stemming algorithm
+- create a document per entry not per thread and hold the relations.
+- Correlated topic model
+- Pachinko allocation (Blei et. al.) to cover longer terms (e.g. right eye)
+- use the relations between threads and connect them on the person
+- use time information to analyze trends or weather conditions
+- OpenCL acceleration
+- ... 
+References and further reading
+========================================================
+
+- Rolf Fredheim, Web Scraping <http://quantifyingmemory.blogspot.co.uk/2014/02/web-scraping-basics.html>
+- C.P. Sievert, XCKD Topic Modeling <https://cpsievert.github.io/projects/615/xkcd/>
+- See my Seminarwork for full Bibliography
