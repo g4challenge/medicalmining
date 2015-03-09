@@ -2,6 +2,7 @@ Topic Modelling of Medical Discussions
 ========================================================
 author: Lukas Huber
 date: March 2nd 2015
+width: 1280
 
 Motivation
 ========================================================
@@ -60,7 +61,7 @@ Latent Dirichlet allocation
 ========================================================
 - random variable $w_i$ denotes the ith-token $i \in \{1,...,N\}$
 - for vocabulary size $v \in \{1,...,V\}$
-- probability of observing word $i$ ind document $d_i$:
+- probability of observing word $i$ in document $d_i$:
 $P(w_i = v) = \sum_{j=1}^T P(w_i = v | z_i = j)P(z_i = j)$
 
 where $z_i \in \{1,...,T\}$ for a given number of topics *T*
@@ -142,12 +143,6 @@ Model-generation
 ========================================================
 
 ```r
-### Parallel
-library(parallel)
-# Calculate the number of cores
-no_cores <- detectCores() - 1
-
-LDAt <- get("LDA")
 # Initiate cluster
 cl <- makeCluster(no_cores)
 clusterExport(cl, "dtm.new") # Document term matrix
@@ -164,6 +159,11 @@ Model-fitting
 ========================================================
 
 ```r
+harmonicMean <- function(logLikelihoods, precision = 2000L) {
+  llMed <- median(logLikelihoods)
+  as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
+                                       prec = precision) + llMed))))
+}
 logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
 hm <- sapply(logLiks, function(h) harmonicMean(h))
 
@@ -186,13 +186,8 @@ matrix, with each row containing the distribution over terms for a topic, with a
 
 Final Product
 ========================================================
+<iframe width='100%' height='800' src='http://localhost:4321' frameborder='0'></iframe>
 
-
-```r
-library(LDAvis)
-load("lda.Rdata")
-serVis(json, out.dir="nurs_lda", open.browser = T)
-```
 
 Discussion
 =========================================================
