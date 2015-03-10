@@ -1,0 +1,39 @@
+---
+title: "Description Datastructure"
+author: "Lukas Huber"
+date: "10. März 2015"
+output: html_document
+---
+
+In general on the board there are several *Thematics*, each thematic contains *Threads* to a specific "topic".
+
+A *Thread* contains several *entries* and *related threads*
+
+an *Entry* contains an *author*, *date* and *text*
+
+###Thematic
+
+- Thread
+- Thread
+- Thread
+  
+###Thread
+
+- entry
+- entry
+- ....
+  
+- related
+  - thread
+  - thread
+  - thread
+
+###entry
+
+- author
+- date
+- text
+  * links
+  * references
+  * etc...
+  
