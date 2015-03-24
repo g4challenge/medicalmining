@@ -17,16 +17,39 @@ library(stringr)
 library(RJSONIO)
 
 
-
-#Preprocess the text and convert to document-term matrix
-dtm.control <- list(
-  tolower = T,
-  removePunctuation = TRUE,
-  removeNumbers = TRUE,
-  stopwords = stopwords("de"),
-  stemming = T,
-  weighting = weightTf
-)
+createDTM <- function(
+  docs.cleared = ""
+  dtm.control = list(
+    tolower = T,
+    removePunctuation = TRUE,
+    removeNumbers = TRUE,
+    stopwords = stopwords("de"),
+    stemming = T,
+    weighting = weightTf
+   ),
+  sparsity = 0.99){
+  #Create Corpus from list and get Document Term Matrix
+  corp <- VCorpus(VectorSource(docs.cleared))
+  dtm <- DocumentTermMatrix(corp, control = dtm.control)
+  #dim(dtm)
+  dtm <- removeSparseTerms(dtm, 0.99)
+  #dim(dtm)
+  
+  #### Remove empty documents
+  rowTotals <- apply(dtm , 1, sum)
+  dtm.new <- dtm[rowTotals>0, ]
+  
+  return dtm
+}
+# #Preprocess the text and convert to document-term matrix
+# dtm.control <- list(
+#   tolower = T,
+#   removePunctuation = TRUE,
+#   removeNumbers = TRUE,
+#   stopwords = stopwords("de"),
+#   stemming = T,
+#   weighting = weightTf
+# )
 
 #Create Corpus from list and get Document Term Matrix
 corp <- VCorpus(VectorSource(docs.cleared))
@@ -48,12 +71,14 @@ harmonicMean <- function(logLikelihoods, precision = 2000L) {
 }
 
 #TODO make Parameters dynamic
-burnin <- 100
-iter <- 100
-keep <- 50
-ks <- seq(20, 80, by = 1)
+getModels <- function(
+dtm = NULL,
+burnin = 100,
+iter = 100,
+keep = 50,
+ks = seq(20, 80, by = 1),
 sel.method = "Gibbs"
-
+){
 ####### Parallel execution of model fitting
 library(parallel)
 # Calculate the number of cores
@@ -62,7 +87,7 @@ no_cores <- detectCores() - 1
 LDAt <- get("LDA")
 # Initiate cluster
 cl <- makeCluster(no_cores)
-clusterExport(cl, "dtm.new") # Document term matrix
+clusterExport(cl, "dtm") # Document term matrix
 clusterExport(cl, "burnin") # burnin default 1000
 clusterExport(cl, "iter") # iter default 1000
 clusterExport(cl, "keep") # keep default 50
@@ -70,11 +95,15 @@ clusterExport(cl, "LDAt")
 models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
 
 stopCluster(cl)
-
+return(models)
+}
 #### END Parallel execution
 #models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 
 ### Select the "best" model
+getBestModel <- function(
+  models = NULL
+  ){
 logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
 hm <- sapply(logLiks, function(h) harmonicMean(h))
 
@@ -86,8 +115,11 @@ k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
 plot(ks, hm, type = "l")
 ## select the optimal model
 opt <- models[which.max(hm)][[1]]
-
+return(opt)
+}
 # Extract the 'guts' of the optimal model
+
+getJSON <- function(opt = NULL){
 doc.id <- opt@wordassignments$i
 token.id <- opt@wordassignments$j
 topic.id <- opt@wordassignments$v
@@ -129,7 +161,8 @@ for(i in 1:length(doc.id)){
 #library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
 
 json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
-
+return(json)
+}
 #json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
 #                           vocab, topic.proportion))
 ## TODO refactor to serve this in shinydashboard.
