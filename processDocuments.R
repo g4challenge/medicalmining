@@ -1,4 +1,8 @@
+### Lukas Huber
+### 2015
 
+## Parse the HTML content of a site and return the content and title
+## TODO should be refactored to return all informations and made more error resistent
 getDocument <- function(content){
   if(content =="") return(c("", ""))
   #print(str(content))
@@ -39,7 +43,8 @@ getDocument <- function(content){
   return(c(contentTitle, doc))
 }
 
-
+## take dataframe with url and scrape each threads content.
+## TODO make loop asynchrounus
 getAllDocumentsofThematic <- function(df.threads){
   doc.list <- list()
   title.list <- list()
@@ -55,6 +60,7 @@ getAllDocumentsofThematic <- function(df.threads){
   return(doc.list)
 }
 
+### Clear the NEXTENTRY which should split threads into entries
 clearNE <- function(doc){
   str_replace_all(string = doc, pattern = "NEXTENTRY", replacement = " ")
 }

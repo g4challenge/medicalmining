@@ -28,6 +28,7 @@ dtm.control <- list(
   weighting = weightTf
 )
 
+#Create Corpus from list and get Document Term Matrix
 corp <- VCorpus(VectorSource(docs.cleared))
 dtm <- DocumentTermMatrix(corp, control = dtm.control)
 dim(dtm)
@@ -45,13 +46,15 @@ harmonicMean <- function(logLikelihoods, precision = 2000L) {
   as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
                                        prec = precision) + llMed))))
 }
+
+#TODO make Parameters dynamic
 burnin <- 100
 iter <- 100
 keep <- 50
 ks <- seq(20, 80, by = 1)
+sel.method = "Gibbs"
 
-ktemp <-20
-### Parallel
+####### Parallel execution of model fitting
 library(parallel)
 # Calculate the number of cores
 no_cores <- detectCores() - 1
@@ -64,19 +67,24 @@ clusterExport(cl, "burnin") # burnin default 1000
 clusterExport(cl, "iter") # iter default 1000
 clusterExport(cl, "keep") # keep default 50
 clusterExport(cl, "LDAt")
-models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
+models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
 
 stopCluster(cl)
 
+#### END Parallel execution
 #models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
+
+### Select the "best" model
 logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
 hm <- sapply(logLiks, function(h) harmonicMean(h))
 
-##edit by me
+##edit by me obsolete
 k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
-AICs = -2*hm + 2*k
+#AICs = -2*hm + 2*k
 
+## plot the harmonic mean
 plot(ks, hm, type = "l")
+## select the optimal model
 opt <- models[which.max(hm)][[1]]
 
 # Extract the 'guts' of the optimal model
@@ -94,7 +102,7 @@ token.frequency <- as.numeric(table(token.id))
 topic.id <- dat$topic.id
 topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
 
-### Get doc.length
+### Get doc.length for creating JSON
 lastDoc <- 1
 doc.length <- c()
 count <- 0
@@ -124,4 +132,5 @@ json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
 
 #json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
 #                           vocab, topic.proportion))
+## TODO refactor to serve this in shinydashboard.
 serVis(json, out.dir="nurs_lda", open.browser = T)

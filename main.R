@@ -1,6 +1,11 @@
+#### Main scraping document
+
+####load libs
 library(RCurl)
 library(XML)
 library(stringr)
+
+### function to scrape the board.netdoktor.de page to get the thematics like eyes, ....
 netDoktorScraper <- function(url){
   SOURCE <-  getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
   PARSED <- htmlParse(SOURCE)
@@ -17,7 +22,7 @@ netDoktorScraper <- function(url){
 }
 
 
-
+### function to scrape through a thematic like eye with the postfix
 scrapeThematic <- function(url, postfix){
   SOURCE <- getURL(paste(url, "/", postfix, sep=""),encoding="UTF-8") # Specify encoding when dealing with non-latin characters
   PARSED <- htmlParse(SOURCE)
@@ -33,6 +38,9 @@ scrapeThematic <- function(url, postfix){
               link=c(link, previous$link)))
 }
 
+
+### the actial function to get the content
+# TODO should be refactored
 scrapeContent <- function(url){
   SOURCE <-  tryCatch({
       getURL(url,encoding="UTF-8") # Specify encoding when dealing with non-latin characters
