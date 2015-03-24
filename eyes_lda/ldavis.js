@@ -42,11 +42,11 @@ LDAvis = function(to_select, json_file) {
         bottom: 70,
         left: 30
     },
-    mdswidth = 530,
-    mdsheight = 530,
-    barwidth = 530,
-    barheight = 530,
-    termwidth = 90, // width to add between two panels to display terms
+    mdswidth = 400,
+    mdsheight = 400,
+    barwidth = 400,
+    barheight = 400,
+    termwidth = 70, // width to add between two panels to display terms
     mdsarea = mdsheight * mdswidth;
     // controls how big the maximum circle can be
     // doesn't depend on data, only on mds width and height:
@@ -638,7 +638,7 @@ LDAvis = function(to_select, json_file) {
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
-    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; position: absolute; top: 0px; left: 0px;");
+    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 180px; font-family: sans-serif; position: absolute; top: 0px; left: 0px;");
 	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
 	    var xx = d3.select("#lambdaZero")
@@ -663,11 +663,11 @@ LDAvis = function(to_select, json_file) {
 
     	    var sliderDiv = document.createElement("div");
     	    sliderDiv.setAttribute("id", "sliderdiv");
-    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; position: absolute; top:0px; left: 240px; width: 250px");
+    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; position: absolute; top:0px; left: 200px; width: 150px");
     	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
-            lambdaInput.setAttribute("style", "width: 250px; margin-top: -20px; margin-left: 0px; margin-right: 0px");
+            lambdaInput.setAttribute("style", "width: 150px; margin-top: -20px; margin-left: 0px; margin-right: 0px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
@@ -679,12 +679,12 @@ LDAvis = function(to_select, json_file) {
 
 	    // Create the svg to contain the slider scale:
 	    var scaleContainer = d3.select("#sliderdiv").append("svg")
-		.attr("width", 250)
+		.attr("width", 150)
 		.attr("height", 25);
 
             var sliderScale = d3.scale.linear()
 		.domain([0, 1])
-		.range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
+		.range([7.5, 142.5])  // trimmed by 7.5px on each side to match the input type=range slider:
 		.nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
