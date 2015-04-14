@@ -39,7 +39,7 @@ createDTM <- function(
   rowTotals <- apply(dtm , 1, sum)
   dtm.new <- dtm[rowTotals>0, ]
   
-  return dtm
+  return(dtm)
 }
 # #Preprocess the text and convert to document-term matrix
 # dtm.control <- list(
@@ -51,16 +51,6 @@ createDTM <- function(
 #   weighting = weightTf
 # )
 
-#Create Corpus from list and get Document Term Matrix
-corp <- VCorpus(VectorSource(docs.cleared))
-dtm <- DocumentTermMatrix(corp, control = dtm.control)
-dim(dtm)
-dtm <- removeSparseTerms(dtm, 0.99)
-dim(dtm)
-
-#### Remove empty documents
-rowTotals <- apply(dtm , 1, sum)
-dtm.new <- dtm[rowTotals>0, ]
 
 # Fit models and find an optimal number of topics as suggested by Ben Marmick --
 # http://stackoverflow.com/questions/21355156/topic-models-cross-validation-with-loglikelihood-or-perplexity/21394092#21394092
