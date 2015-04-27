@@ -115,8 +115,8 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           }
                           
                           # create Histograms
-                          self$superTopicHistograms = array(0, dim = c(self$numSuperTopics, maxTokens +1))
-                          self$subTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numSubTopics, maxTokens + 1))
+                          self$superTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numTypes))
+                          self$subTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numSubTopics, self$numTypes))
                           
                           # Start the sampler
                           for(i in 1:numIterations){
@@ -211,36 +211,43 @@ pachinko <- R6Class(classname = "pachinkoModel",
                         #Loop over every word in the corpus
                         for(di in 1:length(self$superTopics)){
                           self$sampleTopicsForOneDoc(self$dtm[di,],
-                                                self$superTopics[di],
-                                                self$subTopics[di],
+                                                di,
+                                                #self$subTopics[di],
                                                 random)
                         }
                       },
                       sampleTopicsForOneDoc = function(oneDocTokens,
-                                                       superTopics,
-                                                       subTopics,
+                                                       di, #int index
+                                                       #subTopics, #int index
                                                        random){
                         for(t in 1:self$numSuperTopics){
                           self$superSubCounts[t,] = rep(0, dim(self$superSubCounts)[2])
                         }
                         self$superCounts = rep(0, length(self$superCounts))
                         
-                        seq = which(as.vector(oneDocTokens)>0)
+                        seq <- which(as.vector(oneDocTokens)>0)
+                       
                         #populate topic counts
                         for(si in 1:length(seq)){
-                          self$superSubCounts[superTopics[si], subTopics[si]] = self$superSubCounts[superTopics[si], subTopics[si]] + 1
-                          self$superCounts[superTopics[si]] = self$superCounts[superTopics[si]] + 1
+                          self$superSubCounts[self$superTopics[di, si], self$subTopics[di, si]] = self$superSubCounts[self$superTopics[di, si], self$subTopics[di, si]] + 1
+                          self$superCounts[self$superTopics[di,si]] = self$superCounts[self$superTopics[di, si]] + 1
+                        }
+                        if(length(seq)==0){
+                          print("empty")
+                          return(self)
                         }
                         # iterate over the positions(words) in the document
                         for(si in 1:length(seq)){
+                          
+              
                           type = seq[si]
-                          superTopic = superTopics[si]
-                          subTopic = subTopics[si]
+                          superTopic = self$superTopics[di, si]
+                          subTopic = self$subTopics[di, si]
                           
                           # Remove this token from all counts
                           self$superSubCounts[superTopic, subTopic] = self$superSubCounts[superTopic, subTopic] - 1
                           self$superCounts[superTopic] = self$superCounts[superTopic] -1
-                          self$typeSubTopicCounts[type, subTopics] = self$typeSubTopicCounts[type, subTopics] - 1
+                          self$typeSubTopicCounts[type, subTopic] = self$typeSubTopicCounts[type, subTopic] - 1
                           self$tokensPerSuperTopic[superTopic] = self$tokensPerSuperTopic[superTopic] -1
                           self$tokensPerSubTopic[subTopic] = self$tokensPerSubTopic[subTopic] -1
                           self$tokensPerSuperSubTopic[superTopic, subTopic] = self$tokensPerSuperSubTopic[superTopic, subTopic] - 1
@@ -262,7 +269,7 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           #  and one that depends on the super-sub pair.
                           
                           # Calculate each of the super-only factors first
-                          for(superTopic in 1:numSuperTopics){
+                          for(superTopic in 1:self$numSuperTopics){
                             self$superWeights[superTopic] = (self$superCounts[superTopic] + self$alpha[superTopic]) /
                                                             (self$superCounts[superTopic] + self$subAlphaSums[superTopic])
                           }
@@ -277,16 +284,22 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           cumulativeWeight=0.0
                           for(superTopic in 1:self$numSuperTopics){
                             #currentSuperSubWeights = self$superSubWeights[superTopic,]
-                            currentSuperSubCounts = self$superSubCounts[superTopic,]
-                            currentSubAlpha = self$subAlphas[superTopic,]
-                            currentSuperWeight = self$superWeights[superTopic]
+                            #currentSuperSubCounts = self$superSubCounts[superTopic,]
+                            #currentSubAlpha = self$subAlphas[superTopic,]
+                            #currentSuperWeight = self$superWeights[superTopic]
                             
                             for(subTopic in 1:self$numSubTopics){
                               self$superSubWeights[superTopic, subTopic] = 
-                                  currentSuperWeight *
+                                  self$superWeights[superTopic] *
                                   self$subWeights[subTopic] *
-                                  (currentSuperSubCounts[subTopic] + currentSubAlpha[subTopic])
-                              cumulativeWeight = cumulativeWeight + self$superSubWeights[superTopics, subTopic]
+                                  (self$superSubCounts[superTopic, subTopic] + self$subAlphas[superTopic, subTopic])
+                              cumulativeWeight = cumulativeWeight + self$superSubWeights[superTopic, subTopic]
+                            }
+                            if(is.na(cumulativeWeight)){
+                              print("Error")
+                              print(subTopic)
+                              print(superTopic)
+                              print(type)
                             }
                             self$cumulativeSuperWeights[superTopic] = cumulativeWeight
                           }
@@ -303,27 +316,24 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           #currentSuperSubWeights = self$superSubWeights[superTopic,]
                           cumulativeWeight = self$cumulativeSuperWeights[superTopic] -
                             self$superSubWeights[superTopic, 1];
-                          
                           # Go over each sub-topic until the weight is LESS than
                           #  the sample. Note that we're subtracting weights
 			                    #  in the same order we added them...
 			                    subTopic = 1;
-                          
                           while(sample < cumulativeWeight){
                             subTopic = subTopic + 1
                             cumulativeWeight = cumulativeWeight - self$superSubWeights[superTopic, subTopic]
-                            print(self$superSubWeights[superTopic, subTopic])
                           }
                           
                           # Save the coice into the Gibbs state
                           
-                          superTopics[si] = superTopic
-                          subTopic[si] = subTopic
+                          self$superTopics[di, si] = superTopic
+                          self$subTopics[di, si] = subTopic
                           
                           # put the new super/sub topics into the counts
 			                    self$superSubCounts[superTopic, subTopic] = self$superSubCounts[superTopic, subTopic]+ 1
 			                    self$superCounts[superTopic] = self$superCounts[superTopic]+1
-			                    self$typeSubTopicCounts[type][subTopic] = self$typeSubTopicCounts[type][subTopic]+1
+			                    self$typeSubTopicCounts[type, subTopic] = self$typeSubTopicCounts[type, subTopic]+1
 			                    self$tokensPerSuperTopic[superTopic] = self$tokensPerSuperTopic[superTopic]+1
 			                    self$tokensPerSubTopic[subTopic] = self$tokensPerSubTopic[subTopic]+1
 			                    self$tokensPerSuperSubTopic[superTopic, subTopic] = self$tokensPerSuperSubTopic[superTopic, subTopic]+1
@@ -331,13 +341,12 @@ pachinko <- R6Class(classname = "pachinkoModel",
                         # Update the topic count histograms
                         # for dirichlet estimation
                         
-                        for(superTopic in 1:numSuperTopics){
+                        for(superTopic in 1:self$numSuperTopics){
                           self$superTopicHistograms[superTopic, self$superCounts[superTopic]] = self$superTopicHistograms[superTopic, self$superCounts[superTopic]] +1
-                          currentSuperSubCounts = self$superSubCounts[superTopic,]
                           
-                          for(subTopic in 1:numSupTopics){
-                            self$subTopicHistograms[superTopic, subTopic, currentSuperSubCounts[subTopic]] =
-                              self$subTopicHistograms[superTopic, subTopic, currentSuperSubCounts[subTopic]] +1
+                          for(subTopic in 1:self$numSubTopics){
+                            self$subTopicHistograms[superTopic, subTopic, self$superSubCounts[superTopic, subTopic]] =
+                              self$subTopicHistograms[superTopic, subTopic, self$superSubCounts[superTopic, subTopic]] +1
                           }
                         }
                         
