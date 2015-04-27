@@ -1,8 +1,5 @@
 ## ui.R ##
-
 library(shinydashboard)
-
-
 
 # header
 header <-  dashboardHeader(title = "MeMi", 
@@ -11,61 +8,45 @@ header <-  dashboardHeader(title = "MeMi",
                            dropdownMenuOutput("taskMenu")
 )
 
-
-
 # sidebar
 sidebar <- dashboardSidebar(
-  
   sidebarSearchForm(textId = "searchText", buttonId = "searchButton",
                     label = "Search..."),
-  
   sidebarMenu(
     menuItem("dtm Controll", tabName = "dtm",  icon = icon("cog", lib = "glyphicon"),
-             checkboxInput("toLower", label = "To Lower", value = FALSE),
-             checkboxInput("punctuation", label = "Remove Punctuation", value = FALSE),
-             checkboxInput("numbers", label = "Remove Number", value = FALSE),
-             checkboxInput("stemming", label = "Stemming", value = FALSE),
-             sliderInput("waitingRate", "Waiting ...", min = 0, max = 50, value = 1, step = 0.5),
+             checkboxInput("toLower", label = "To Lower", value = TRUE),
+             checkboxInput("punctuation", label = "Remove Punctuation", value = TRUE),
+             checkboxInput("numbers", label = "Remove Number", value = TRUE),
+             checkboxInput("stemming", label = "Stemming", value = TRUE),
+             checkboxInput("weighting", label = "Weighting", value = TRUE),
              textInput("stopwords", label = "Stopwords"),
-             sliderInput("sparsity", "Sparsity ...", min = 0, max = 10, value = 1, step = 2)
+             sliderInput("sparsity", "Sparsity ...", min = 0.0, max = 1, value = 0.99, step = 0.01)
     ), 
     menuItem("Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),
-             numericInput("burning", label = "Burning", value = 1),
-             numericInput("iterator", label = "Iterator", value = 1),
-             numericInput("keep", label = "Keep", value = 1),  
-             sliderInput("ks", label = "ks-Range", min = 0, max = 100, value = c(40, 60))           
+             numericInput("burning", label = "Burning", value = 100),
+             numericInput("iterator", label = "Iterator", value = 100),
+             numericInput("keep", label = "Keep", value = 50),  
+             sliderInput("ks", label = "ks-Range", min = 0, max = 100, value = c(20, 80))           
     )
-    
   )
 )
-
-
 
 # main body
 body <- dashboardBody(
   fluidRow(
-    tags$iframe(
-      src="file:///Users/lukas/ownCloud/documents/topicModelNetDoktor/eyes_lda/index.html#topic=0&lambda=1&term="),
-    plotOutput('plot', width = "300px", height = "300px")
+    box(
+      title = "Diagram", solidHeader = TRUE, width = "620px",
+      plotOutput('plot', width = "600px", height = "600px")
+    )
   ),
   fluidRow(
-    # A static valueBox
-    valueBox(10 * 2, "New Orders", icon = icon("credit-card")),
-    
-    # Dynamic valueBoxes
-    valueBoxOutput("progressBox"),
-    
-    valueBoxOutput("approvalBox")
-  ),
-  fluidRow(
-    # Clicking this will increment the progress amount
-    box(width = 4, actionButton("count", "Increment progress"))
+    box(
+      title = "Inputs", solidHeader = TRUE,
+      width = 4, 
+      actionButton("goPlot", "Render")
+    )
   )
 )
-
-
-
-
 
 
 
