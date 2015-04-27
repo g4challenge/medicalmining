@@ -9,34 +9,36 @@ pachinko <- R6Class(classname = "pachinkoModel",
                       
                       alpha = c(0), #Dirichlet(alpha,alpha,) distribution over supertopics
                       alphaSum = 50,
-                      subAlphas = matrix(seq(1, 8), nrow=4, ncol=2),
+                      subAlphas = array(),
                       subAlphaSums = c(0),
                       beta=0.001, # Prior on per-topic multinomial distribution over words
                       vBeta=0,
                       
                       #Data 
-                      ilist = list(), #documents
+                      dtm = NULL, #documents
                       numTypes = 0,
                       numTokens = 0,
                       
                       #Gibbs sampling state
-                      superTopics = matrix(), #indexed by document index, sequence index
-                      subTopics = matrix(),
+                      superTopics = array(), #indexed by document index, sequence index
+                      subTopics = array(),
                       
                       #Per-document state variables
-                      superSubCounts = matrix(), # # of words per super,sub
+                      superSubCounts = array(), # # of words per super,sub
                       superCounts = c(), # # of words per super
                       superWeights = c(), # the component of the Gibbs update that depends on super-topics
                       subWeights = c(), # the component of the Gibbs update that depends on sub-topics
-                      superSubWeights = matrix(), # unnormalized sampling distribution
+                      superSubWeights = array(), # unnormalized sampling distribution
                       cumulativeSuperWeights = c(), # a cache of the cumulative weight for each super-topic
                       
                       #Per-word type state variables
-                      typeSubTopicCounts= matrix(), # indexed by <feature index, topic index>
+                      typeSubTopicCounts= array(), # indexed by <feature index, topic index>
                       tokensPerSubTopic= c(), # indexed by <topic index>
+                      tokensPerSuperTopic = c(),
+                      tokensPerSuperSubTopic = c(),
                       
                       # Histograms for MLE
-                      superTopicHistograms = matrix(),  # histogram of # of words per supertopic in documents
+                      superTopicHistograms = array(),  # histogram of # of words per supertopic in documents
                       #  eg, [17][4] is # of docs with 4 words in sT 17...
                       subTopicHistograms = array(0, dim=c(0,0,0)), #for each supertopic, histogram of # of words per subtopic
                       
@@ -48,7 +50,7 @@ pachinko <- R6Class(classname = "pachinkoModel",
                         self$alpha=rep((self$alphaSum/self$numSuperTopics), supTop)
                         
                         #Initialize the sub-topic alphas to a symmetric dirichlet
-                        self$subAlphas = array(1.0, dim=c(supTop, subTop))
+                        self$subAlphas <<- array(1.0, dim=c(supTop, subTop))
                         self$subAlphaSums = rep(subTop, supTop)
                         
                         self$beta= beta
@@ -57,46 +59,69 @@ pachinko <- R6Class(classname = "pachinkoModel",
                       estimate = function(dtm, numIterations, optimizeInterval,
                                           showTopicsInterval, outputModelInterval, outputModel, randoms){
                         
-                        numDocs = length(documents)
-                        numTypes = 1 # size dataalphabet
+                        self$dtm = dtm
+                        numDocs = length(unique(dtm$i))
+                        self$numTypes = length(unique(dtm$j))# size dataalphabet
                     
+                        self$superTopics= array(0, dim=c(numDocs, self$numTypes))
+                        self$subTopics = array(0, dim=c(numDocs, self$numTypes))
+                        
+                        self$superSubCounts = array(0, dim=c(self$numSuperTopics, self$numSubTopics))
+                        self$superCounts = array(0, dim=c(self$numSuperTopics))
+                        self$superWeights = array(0.0, dim=c(self$numSuperTopics))
+                        self$subWeights = array(0.0, dim=c(self$numSubTopics))
+                        self$superSubWeights = array(0.0, dim=c(self$numSuperTopics, self$numSubTopics))
+                        self$cumulativeSuperWeights = array(0.0, dim=c(self$numSuperTopics))
+                        
+                        self$typeSubTopicCounts = array(0, dim=c(self$numTypes, self$numSubTopics))
+                        self$tokensPerSubTopic = array(0, dim=c(self$numSubTopics))
+                        self$tokensPerSuperTopic = array(0, dim=c(self$numSuperTopics))
+                        self$tokensPerSuperSubTopic = array(0, dim=c(self$numSuperTopics, self$numSubTopics))
+                        
+                        self$vBeta = self$beta * self$numTypes
                         maxTokens = 0
                         
                         # Initialize with random assignments of tokens to topics
                         # and finish allocating self$topics and self$tokens
                         
                         #for all documents
-                        numTokens = length(unique(dtm$j))
-                        for(i in 1:length(unique(dtm$i))){
-                          seq = which(as.vector(dtm[j,])>0)
+                        for(di in 1:numDocs){
+                          seq = which(as.vector(dtm[di,])>0)
                           seqlen = length(seq)
                           
+                          if(seqlen > maxTokens){
+                            maxTokens = seqlen
+                          }
+                          
+                          self$numTokens = self$numTokens + seqlen
+                          
                           #Randomly assign tokens to topics
-                          for(j in 1:seqlen){
+                          for(si in 1:seqlen){
                             # Random super-topic
-                            superTopic = sample(which(as.vector(dtm[i,])>0),1)
-                            self$superTopics[i,j] = superTopic
-                            self$tokensPerSuperTopic[superTopic] <- self$tokensPerSuperTopic[superTopic]+1
+                            superTopic = sample(1:self$numSuperTopics, 1)
+                            self$superTopics[di,si] = superTopic
+                            self$tokensPerSuperTopic[superTopic] = self$tokensPerSuperTopic[superTopic]+1
                             
                             # Random sub-topic
-                            subTopic = sample(which(as.vector(dtm[i,])>0),1)
-                            self$subTopics[i,j] = subTopic
+                            subTopic = sample(1:self$numSubTopics, 1)
+                            self$subTopics[di,si] = subTopic
                             
                             # update word-type statistics for sub-topic
-                            self$typeSubTopicCounts[seq[j],subTopic] <- self$typeSubTopicCounts[seq[j],subTopic] + 1
+                            # document di, token si, index
+                            self$typeSubTopicCounts[seq[si],subTopic] <- self$typeSubTopicCounts[seq[si],subTopic] + 1
                             self$tokensPerSubTopic[subTopic] <-  self$tokensPerSubTopic[subTopic] + 1
                             
                             self$tokensPerSuperSubTopic[superTopic, subTopic] = self$tokensPerSuperSubTopic[superTopic, subTopic] + 1
                           }
                           
                           # create Histograms
-                          self$superTopicHistograms = array(0, dim = c(self$numSuperTopics, maxTokens +1))
-                          self$subTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numSubTopics, maxTokens + 1))
+                          self$superTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numTypes))
+                          self$subTopicHistograms = array(0, dim = c(self$numSuperTopics, self$numSubTopics, self$numTypes))
                           
                           # Start the sampler
                           for(i in 1:numIterations){
-                            clearHistograms()
-                            sampleTopicsForAllDocs(random)
+                            self$clearHistograms()
+                            self$sampleTopicsForAllDocs(random)
                             
                             if(iterations > 0){
                               #skipped 2 ifs
@@ -117,10 +142,10 @@ pachinko <- R6Class(classname = "pachinkoModel",
                         # end of constructor
                       },
                       clearHistograms = function(){
-                        for(superTopic in 1:numSuperTopics){
+                        for(superTopic in 1:self$numSuperTopics){
                           self$superTopicHistograms[superTopic] = rep(0, length(self$superTopicHistograms[superTopic]))
-                          for(subTopic in 1:numSubTopics){
-                            self$subTopicHistograms[superTopic, subTopic] = rep(0, length(self$superTopicHistograms[superTopic, subTopic]))
+                          for(subTopic in 1:self$numSubTopics){
+                            self$subTopicHistograms[superTopic, subTopic, ] = rep(0, length(self$superTopicHistograms[superTopic, subTopic]))
                           }
                         }
                       },
@@ -185,36 +210,44 @@ pachinko <- R6Class(classname = "pachinkoModel",
                       sampleTopicsForAllDocs = function(random){
                         #Loop over every word in the corpus
                         for(di in 1:length(self$superTopics)){
-                          sampleTopicsForOneDoc(ilist,
-                                                superTopics[di],
-                                                subTopics[di],
+                          self$sampleTopicsForOneDoc(self$dtm[di,],
+                                                di,
+                                                #self$subTopics[di],
                                                 random)
                         }
                       },
                       sampleTopicsForOneDoc = function(oneDocTokens,
-                                                       superTopics,
-                                                       subTopics,
+                                                       di, #int index
+                                                       #subTopics, #int index
                                                        random){
-                        for(t in 1:numSuperTopics){
-                          self$superSubCounts[t] = rep(0, length(self$superSubCounts))
+                        for(t in 1:self$numSuperTopics){
+                          self$superSubCounts[t,] = rep(0, dim(self$superSubCounts)[2])
                         }
-                        self$superCounts = rep(0, self$superCounts)
+                        self$superCounts = rep(0, length(self$superCounts))
                         
-                        #populate topic couns
-                        for(si in 1:length(oneDocTokens)){
-                          self$superSubCounts[superTopics[si], subTopics[si]] = self$superSubCounts[superTopics[si], subTopics[si]] + 1
-                          self$superCounts[superTopics[si]] = self$superCounts[superTopics[si]] + 1
+                        seq <- which(as.vector(oneDocTokens)>0)
+                       
+                        #populate topic counts
+                        for(si in 1:length(seq)){
+                          self$superSubCounts[self$superTopics[di, si], self$subTopics[di, si]] = self$superSubCounts[self$superTopics[di, si], self$subTopics[di, si]] + 1
+                          self$superCounts[self$superTopics[di,si]] = self$superCounts[self$superTopics[di, si]] + 1
+                        }
+                        if(length(seq)==0){
+                          print("empty")
+                          return(self)
                         }
                         # iterate over the positions(words) in the document
-                        for(si in 1:length(oneDocTokens)){
-                          type = getIndex(oneDocTokens[si])
-                          superTopic = superTopics[si]
-                          subTopic = subTopics[si]
+                        for(si in 1:length(seq)){
+                          
+              
+                          type = seq[si]
+                          superTopic = self$superTopics[di, si]
+                          subTopic = self$subTopics[di, si]
                           
                           # Remove this token from all counts
                           self$superSubCounts[superTopic, subTopic] = self$superSubCounts[superTopic, subTopic] - 1
                           self$superCounts[superTopic] = self$superCounts[superTopic] -1
-                          self$typeSubTopicCounts[type, subTopics] = self$typeSubTopicCounts[type, subTopics] - 1
+                          self$typeSubTopicCounts[type, subTopic] = self$typeSubTopicCounts[type, subTopic] - 1
                           self$tokensPerSuperTopic[superTopic] = self$tokensPerSuperTopic[superTopic] -1
                           self$tokensPerSubTopic[subTopic] = self$tokensPerSubTopic[subTopic] -1
                           self$tokensPerSuperSubTopic[superTopic, subTopic] = self$tokensPerSuperSubTopic[superTopic, subTopic] - 1
@@ -228,7 +261,7 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           }
                           self$superWeights = rep(0.0, length(self$superWeights))
                           self$subWeights = rep(0.0, length(self$subWeights))
-                          self$cumulativeSuperWeights = rep(0.0, self$cumulativeSuperWeights)
+                          self$cumulativeSuperWeights = rep(0.0, self$numSuperTopics)
                           
                           # The conditional probability of each super-sub pair is proportional
                           #  to an expression with three parts, one that depends only on the 
@@ -236,66 +269,71 @@ pachinko <- R6Class(classname = "pachinkoModel",
                           #  and one that depends on the super-sub pair.
                           
                           # Calculate each of the super-only factors first
-                          for(superTopic in 1:numSuperTopics){
+                          for(superTopic in 1:self$numSuperTopics){
                             self$superWeights[superTopic] = (self$superCounts[superTopic] + self$alpha[superTopic]) /
                                                             (self$superCounts[superTopic] + self$subAlphaSums[superTopic])
                           }
                           # Next Calculate the sub-only factors
                           
-                          for(subTopic in 1:numSubTopics){
+                          for(subTopic in 1:self$numSubTopics){
                             self$subWeights[subTopic] = (self$typeSubTopicCounts[type, subTopic] + self$beta) /
                                                         (self$tokensPerSubTopic[subTopic] + self$vBeta)
                           }
                           
                           # Finally, put them together
                           cumulativeWeight=0.0
-                          for(superTopic in 1:numSuperTopics){
-                            currentSuperSubWeights = self$superSupWeights[superTopic]
-                            currentSuperSubCounts = self$superSubCounts[superTopic]
-                            currentSubAlpha = self$subAlphas[superTopic]
-                            currentSuperWeigth = self$superWeights[superTopic]
+                          for(superTopic in 1:self$numSuperTopics){
+                            #currentSuperSubWeights = self$superSubWeights[superTopic,]
+                            #currentSuperSubCounts = self$superSubCounts[superTopic,]
+                            #currentSubAlpha = self$subAlphas[superTopic,]
+                            #currentSuperWeight = self$superWeights[superTopic]
                             
-                            for(subTopic in 1:numSubTopics){
-                              currentSuperSubWeights[subTopic] = 
-                                  currentSuperWeight *
+                            for(subTopic in 1:self$numSubTopics){
+                              self$superSubWeights[superTopic, subTopic] = 
+                                  self$superWeights[superTopic] *
                                   self$subWeights[subTopic] *
-                                  (currentSuperSubCounts[subtopic] + currentSubAlpha[subTopic])
-                              cumulativeWeight = cumulativeWeight + currentSuperSubWeights[subTopic]
+                                  (self$superSubCounts[superTopic, subTopic] + self$subAlphas[superTopic, subTopic])
+                              cumulativeWeight = cumulativeWeight + self$superSubWeights[superTopic, subTopic]
+                            }
+                            if(is.na(cumulativeWeight)){
+                              print("Error")
+                              print(subTopic)
+                              print(superTopic)
+                              print(type)
                             }
                             self$cumulativeSuperWeights[superTopic] = cumulativeWeight
                           }
                           
                           #Sample a topic assignment from this distribution
-                          sample = sample(random) *cumulativeWeight #TODO fixx
+                          sample = runif(1, min=0, max=1) *cumulativeWeight #like mallet mean 0.5 var 1/12
                           
                           # Go over the row sums to find the super-topic...
-                          superTopic = 0
+                          superTopic = 1
                           while(sample > self$cumulativeSuperWeights[superTopic]){
                             superTopic = superTopic + 1
                           }
                           # Now read across to find the sub-topic
-                          currentSuperSubWeights = self$superSubWeights[superTopic]
+                          #currentSuperSubWeights = self$superSubWeights[superTopic,]
                           cumulativeWeight = self$cumulativeSuperWeights[superTopic] -
-                            currentSuperSubWeights[0];
-                          
+                            self$superSubWeights[superTopic, 1];
                           # Go over each sub-topic until the weight is LESS than
                           #  the sample. Note that we're subtracting weights
 			                    #  in the same order we added them...
-			                    subTopic = 0;
+			                    subTopic = 1;
                           while(sample < cumulativeWeight){
                             subTopic = subTopic + 1
-                            cumulativeWeight = cumulativeWeight - currentSuperSubWeights[subTopic]
+                            cumulativeWeight = cumulativeWeight - self$superSubWeights[superTopic, subTopic]
                           }
                           
                           # Save the coice into the Gibbs state
                           
-                          superTopics[si] = superTopic
-                          subTopic[si] = subTopic
+                          self$superTopics[di, si] = superTopic
+                          self$subTopics[di, si] = subTopic
                           
                           # put the new super/sub topics into the counts
 			                    self$superSubCounts[superTopic, subTopic] = self$superSubCounts[superTopic, subTopic]+ 1
 			                    self$superCounts[superTopic] = self$superCounts[superTopic]+1
-			                    self$typeSubTopicCounts[type][subTopic] = self$typeSubTopicCounts[type][subTopic]+1
+			                    self$typeSubTopicCounts[type, subTopic] = self$typeSubTopicCounts[type, subTopic]+1
 			                    self$tokensPerSuperTopic[superTopic] = self$tokensPerSuperTopic[superTopic]+1
 			                    self$tokensPerSubTopic[subTopic] = self$tokensPerSubTopic[subTopic]+1
 			                    self$tokensPerSuperSubTopic[superTopic, subTopic] = self$tokensPerSuperSubTopic[superTopic, subTopic]+1
@@ -303,13 +341,12 @@ pachinko <- R6Class(classname = "pachinkoModel",
                         # Update the topic count histograms
                         # for dirichlet estimation
                         
-                        for(superTopic in 1:numSuperTopics){
+                        for(superTopic in 1:self$numSuperTopics){
                           self$superTopicHistograms[superTopic, self$superCounts[superTopic]] = self$superTopicHistograms[superTopic, self$superCounts[superTopic]] +1
-                          currentSuperSubCounts = self$superSubCounts[superTopic,]
                           
-                          for(subTopic in 1:numSupTopics){
-                            self$subTopicHistograms[superTopic, subTopic, currentSuperSubCounts[subTopic]] =
-                              self$subTopicHistograms[superTopic, subTopic, currentSuperSubCounts[subTopic]] +1
+                          for(subTopic in 1:self$numSubTopics){
+                            self$subTopicHistograms[superTopic, subTopic, self$superSubCounts[superTopic, subTopic]] =
+                              self$subTopicHistograms[superTopic, subTopic, self$superSubCounts[superTopic, subTopic]] +1
                           }
                         }
                         
