@@ -155,4 +155,4 @@ return(json)
 #json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
 #                           vocab, topic.proportion))
 ## TODO refactor to serve this in shinydashboard.
-serVis(json, out.dir="nurs_lda", open.browser = T)
+serVis(json, out.dir="eyes_lda", open.browser = T)
