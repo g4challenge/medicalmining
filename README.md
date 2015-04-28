@@ -13,6 +13,7 @@
 
 - devtools::install_github("kshirley/LDAtools")
 - devtools::install_github("cpsievert/LDAvis")
+- devtools::install_github("benmarwick/LDAviz")
 
 
 - install.packages("shiny")
@@ -30,3 +31,7 @@ or
 
 
 - install.packages(c(shiny, topicmodels, tm, Rmpfr, SnowballC, RJSONIO, RCurl, XML, stringr, rmongodb))
+
+
+Note:
+	on a mac you have to install gsl (brew install gsl)
