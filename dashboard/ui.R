@@ -35,19 +35,12 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   fluidRow(
     box(
-      title = "Diagram", solidHeader = TRUE, width = "620px",
-      plotOutput('plot', width = "600px", height = "600px")
-    )
-  ),
-  fluidRow(
-    box(
-      title = "Inputs", solidHeader = TRUE,
-      width = 4, 
-      actionButton("goPlot", "Render")
-    )
+      title="iframe - data", width = "800px", height = "600px",
+      htmlOutput("testhtml")
+    )  
   )
+  
 )
-
 
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)

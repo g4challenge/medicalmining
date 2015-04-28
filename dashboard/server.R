@@ -68,7 +68,7 @@ server <- function(input, output, session){
     input$goPlot # Re-run when button is clicked
     
     withProgress(message = 'Creating plot', value = 0.1, {
-      Sys.sleep(2.25)
+      Sys.sleep(0.25)
       
       # Create 0-row data frame which will be used to store data
       dat <- data.frame(x = numeric(0), y = numeric(0))
@@ -108,5 +108,9 @@ server <- function(input, output, session){
     })
     plot(dat)
   })
+  output$testhtml <- renderUI({
+    tags$iframe(src="http://www.w3schools.com", width=800, height=600)
+  })
+  
 }
 
