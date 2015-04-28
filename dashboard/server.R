@@ -40,11 +40,10 @@ server <- function(input, output, session){
         icon = icon("exclamation-triangle"),
         status = "warning"
       )
-    )
-    
+    )    
     dropdownMenu(type = "notifications", .list=notifications)
   })
-  
+    
   output$taskMenu <- renderMenu({
     tasks <- list(
       taskItem(value = 90, color = "green",
@@ -108,8 +107,9 @@ server <- function(input, output, session){
     })
     plot(dat)
   })
+  addResourcePath("library", "../eyes_lda")
   output$testhtml <- renderUI({
-    tags$iframe(src="http://www.w3schools.com", width=800, height=600)
+    tags$iframe(src="library/index.html", width=1024, height=768)
   })
   
 }
