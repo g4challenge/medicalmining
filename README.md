@@ -11,6 +11,7 @@
 ## Imports
 
 - on linux (ubuntu 14.04) apt-get install libxml2-dev
+- install gnu mp 
 
 - devtools::install_github("kshirley/LDAtools")
 - devtools::install_github("cpsievert/LDAvis")
