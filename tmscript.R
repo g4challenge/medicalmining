@@ -80,7 +80,7 @@ getModels <- function(
   clusterExport(cl, "iter") # iter default 1000
   clusterExport(cl, "keep") # keep default 50
   clusterExport(cl, "LDAt")
-  models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
+  models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
   
   stopCluster(cl)
   return(models)
