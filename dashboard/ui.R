@@ -35,7 +35,7 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   fluidRow(
     box(
-      title="iframe - data", width = "800px", height = "600px",
+      title="iframe - data", width = "1024px", height = "768px",
       htmlOutput("testhtml")
     )  
   )

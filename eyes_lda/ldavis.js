@@ -42,11 +42,11 @@ LDAvis = function(to_select, json_file) {
         bottom: 70,
         left: 30
     },
-    mdswidth = 400,
-    mdsheight = 400,
-    barwidth = 400,
-    barheight = 400,
-    termwidth = 70, // width to add between two panels to display terms
+    mdswidth = 530,
+    mdsheight = 530,
+    barwidth = 530,
+    barheight = 530,
+    termwidth = 90, // width to add between two panels to display terms
     mdsarea = mdsheight * mdswidth;
     // controls how big the maximum circle can be
     // doesn't depend on data, only on mds width and height:
@@ -439,7 +439,7 @@ LDAvis = function(to_select, json_file) {
             }))
             .rangeRoundBands([0, barheight], 0.15);
         var x = d3.scale.linear()
-            .domain([1, d3.max(barDefault2, function(d) {
+            .domain([0, d3.max(barDefault2, function(d) {
                 return d.Total;
             })])
             .range([0, barwidth])
@@ -584,14 +584,12 @@ LDAvis = function(to_select, json_file) {
             // create container div for topic and lambda input:
 	    var inputDiv = document.createElement("div");
 	    inputDiv.setAttribute("id", "top");
-
-            // insert the input container just before the vis:
-            var visDiv = document.getElementById(visID);
-            document.body.insertBefore(inputDiv, visDiv);
+	    inputDiv.setAttribute("style", "width: 1210px"); // to match the width of the main svg element
+	    document.getElementById(visID).appendChild(inputDiv);
 
 	    // topic input container:
-            var topicDiv = document.createElement("div");
-	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: 38px; height: 40px; width: " + mdswidth + "px; display: inline-block");
+	    var topicDiv = document.createElement("div");
+	    topicDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; width: " + mdswidth + "px; height: 50px; float: left");
 	    inputDiv.appendChild(topicDiv);
 
             var topicLabel = document.createElement("label");
@@ -629,16 +627,15 @@ LDAvis = function(to_select, json_file) {
             topicDiv.appendChild(clear);
 
             // lambda inputs
-    	    var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
+    	    //var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
     	    var lambdaDivWidth = barwidth;
     	    var lambdaDiv = document.createElement("div");
     	    lambdaDiv.setAttribute("id", "lambdaInput");
-    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; position: absolute; top: 10px; left: " + 
-				   lambdaDivLeft + "px; height: 50px; width: " + lambdaDivWidth + "px");
+    	    lambdaDiv.setAttribute("style", "padding: 5px; background-color: #e8e8e8; display: inline-block; height: 50px; width: " + lambdaDivWidth + "px; float: right; margin-right: 30px");
     	    inputDiv.appendChild(lambdaDiv);
 
     	    var lambdaZero = document.createElement("div");
-    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 180px; font-family: sans-serif; position: absolute; top: 0px; left: 0px;");
+    	    lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; float: left");
 	    lambdaZero.setAttribute("id", "lambdaZero");
     	    lambdaDiv.appendChild(lambdaZero);
 	    var xx = d3.select("#lambdaZero")
@@ -655,19 +652,13 @@ LDAvis = function(to_select, json_file) {
 		.style("position", "absolute")
 		.text("(2)");
 	    
-            var lambdaLabel = document.createElement("label");
-            lambdaLabel.setAttribute("for", lambdaID);
-	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; position: absolute; top: 25px; left: 90px; font-family: sans-serif; font-size: 14px");
-	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
-            lambdaDiv.appendChild(lambdaLabel);
-
     	    var sliderDiv = document.createElement("div");
     	    sliderDiv.setAttribute("id", "sliderdiv");
-    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; position: absolute; top:0px; left: 200px; width: 150px");
+    	    sliderDiv.setAttribute("style", "padding: 5px; height: 40px; width: 250px; float: right; margin-top: -5px; margin-right: 10px");
     	    lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
-            lambdaInput.setAttribute("style", "width: 150px; margin-top: -20px; margin-left: 0px; margin-right: 0px");
+            lambdaInput.setAttribute("style", "width: 250px; margin-left: 0px; margin-right: 0px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
@@ -677,14 +668,21 @@ LDAvis = function(to_select, json_file) {
 	    lambdaInput.setAttribute("list", "ticks"); // to enable automatic ticks (with no labels, see below)
             sliderDiv.appendChild(lambdaInput);
 
+            var lambdaLabel = document.createElement("label");
+	    lambdaLabel.setAttribute("id", "lamlabel");
+            lambdaLabel.setAttribute("for", lambdaID);
+	    lambdaLabel.setAttribute("style", "height: 20px; width: 60px; font-family: sans-serif; font-size: 14px; margin-left: 80px");
+	    lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
+            lambdaDiv.appendChild(lambdaLabel);
+
 	    // Create the svg to contain the slider scale:
 	    var scaleContainer = d3.select("#sliderdiv").append("svg")
-		.attr("width", 150)
+		.attr("width", 250)
 		.attr("height", 25);
 
             var sliderScale = d3.scale.linear()
 		.domain([0, 1])
-		.range([7.5, 142.5])  // trimmed by 7.5px on each side to match the input type=range slider:
+		.range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
 		.nice();
 
             // adapted from http://bl.ocks.org/mbostock/1166403
@@ -700,7 +698,7 @@ LDAvis = function(to_select, json_file) {
 		.attr("class", "slideraxis")
 		.attr("margin-top", "-10px")
 		.call(sliderAxis);
-	    
+            
 	    // Another strategy for tick marks on the slider; simpler, but not labels
 	    // var sliderTicks = document.createElement("datalist");
 	    // sliderTicks.setAttribute("id", "ticks");
@@ -740,7 +738,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat3, function(d) {
+                .domain([0, d3.max(dat3, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])
@@ -1041,7 +1039,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat3, function(d) {
+                .domain([0, d3.max(dat3, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])
@@ -1105,7 +1103,7 @@ LDAvis = function(to_select, json_file) {
 
             // redraw x-axis
             d3.selectAll(".xaxis")
-                //.attr("class", "xaxis")
+            //.attr("class", "xaxis")
                 .call(xAxis);
         }
 
@@ -1137,7 +1135,7 @@ LDAvis = function(to_select, json_file) {
                 }))
                 .rangeRoundBands([0, barheight], 0.15);
             var x = d3.scale.linear()
-                .domain([1, d3.max(dat2, function(d) {
+                .domain([0, d3.max(dat2, function(d) {
                     return d.Total;
                 })])
                 .range([0, barwidth])

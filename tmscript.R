@@ -19,11 +19,11 @@ library(RJSONIO)
 createDTM <- function(
   docs.cleared = ""
   dtm.control = list(
-    tolower = T,
+    tolower = TRUE,
     removePunctuation = TRUE,
     removeNumbers = TRUE,
     stopwords = stopwords("de"),
-    stemming = T,
+    stemming = TRUE,
     weighting = weightTf
    ),
   sparsity = 0.99){
