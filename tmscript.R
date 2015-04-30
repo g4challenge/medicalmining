@@ -35,7 +35,7 @@ createDTM <- function(
   
   #### Remove empty documents
   rowTotals <- apply(dtm , 1, sum)
-  dtm.new <- dtm[rowTotals>0, ]
+  dtm <- dtm[rowTotals>0, ]
   
   return(dtm)
 }
@@ -86,7 +86,6 @@ getModels <- function(
   return(models)
 }
 #### END Parallel execution
-#models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 
 ### Select the "best" model
 getBestModel <- function(models){
