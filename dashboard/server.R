@@ -3,8 +3,6 @@ library(shinydashboard)
 source("../tmscript.R")
 load("../docs.file")
 
-dtm <- NULL
-
 server <- function(input, output, session){
   output$messageMenu <- renderMenu({
     msgs <- list(messageItem(
@@ -115,13 +113,7 @@ server <- function(input, output, session){
   addResourcePath("library", "../eyes_lda")
   output$testhtml <- renderUI({
   
-    dtm <- createDTM(docs)
-    
-    print(c("test", as.character(dtm)))    
-    model <<- getModels(dtm)
-    bestModel <- getBestModel(model)
-    json <-getJSON(bestModel)
-    serVis(json, out.dir="eyes_lda", open.browser = F)
+    source("../test.R")
     
     
     tags$iframe(src="library/index.html", width=1024, height=768)
