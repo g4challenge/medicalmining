@@ -54,17 +54,21 @@ createDTM <- function(
 # http://stackoverflow.com/questions/21355156/topic-models-cross-validation-with-loglikelihood-or-perplexity/21394092#21394092
 harmonicMean <- function(logLikelihoods, precision = 2000L) {
   llMed <- median(logLikelihoods)
-  as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
+  result <- as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
                                        prec = precision) + llMed))))
+  if(is.na(result)){
+    return(0.0)
+  }
+  return(result)
 }
 
 #TODO make Parameters dynamic
 getModels <- function(
   dtm,
-  burnin = 100,
-  iter = 100,
+  burnin = 1,
+  iter = 1,
   keep = 50,
-  ks = seq(20, 80, by = 1),
+  ks = seq(20, 28, by = 1),
   sel.method = "Gibbs"
 ){
   ####### Parallel execution of model fitting
@@ -76,10 +80,10 @@ getModels <- function(
   # Initiate cluster
   cl <- makeCluster(no_cores)
   clusterExport(cl, "dtm") # Document term matrix
-  clusterExport(cl, "burnin") # burnin default 1000
-  clusterExport(cl, "iter") # iter default 1000
-  clusterExport(cl, "keep") # keep default 50
-  clusterExport(cl, "LDAt")
+  clusterExport(cl, "burnin", envir = environment()) # burnin default 1000
+  clusterExport(cl, "iter", envir = environment()) # iter default 1000
+  clusterExport(cl, "keep", envir = environment()) # keep default 50
+  clusterExport(cl, "LDAt", envir = environment())
   models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
   
   stopCluster(cl)
@@ -88,16 +92,21 @@ getModels <- function(
 #### END Parallel execution
 
 ### Select the "best" model
-getBestModel <- function(models){
+getBestModel <- function(models, 
+                         burnin=1, 
+                         keep=50,
+                         ks = seq(20,28, by=1)
+                         ){
   logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
   hm <- sapply(logLiks, function(h) harmonicMean(h))
   
   ##edit by me obsolete
-  k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
+  #k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
   #AICs = -2*hm + 2*k
   
   ## plot the harmonic mean
-  plot(ks, hm, type = "l")
+  #TODO show plot
+  #plot(ks, hm, type = "l")
   ## select the optimal model
   opt <- models[which.max(hm)][[1]]
   return(opt)
