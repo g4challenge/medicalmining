@@ -10,7 +10,7 @@
 
 ## Imports
 
-- on linux (ubuntu 14.04) apt-get install libxml2-dev libmpfr4
+- on linux (ubuntu 14.04) apt-get install libxml2-dev libmpfr4 libmpfr-dev
 - install gnu mp 
 - install gnu scientific library gsl
 
