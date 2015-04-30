@@ -15,9 +15,8 @@ library(SnowballC)
 library(stringr)
 library(RJSONIO)
 
-
 createDTM <- function(
-  docs.cleared = ""
+  docs.cleared,
   dtm.control = list(
     tolower = TRUE,
     removePunctuation = TRUE,
@@ -25,7 +24,7 @@ createDTM <- function(
     stopwords = stopwords("de"),
     stemming = TRUE,
     weighting = weightTf
-   ),
+  ),
   sparsity = 0.99){
   #Create Corpus from list and get Document Term Matrix
   corp <- VCorpus(VectorSource(docs.cleared))
@@ -61,98 +60,95 @@ harmonicMean <- function(logLikelihoods, precision = 2000L) {
 
 #TODO make Parameters dynamic
 getModels <- function(
-dtm = NULL,
-burnin = 100,
-iter = 100,
-keep = 50,
-ks = seq(20, 80, by = 1),
-sel.method = "Gibbs"
+  dtm,
+  burnin = 100,
+  iter = 100,
+  keep = 50,
+  ks = seq(20, 80, by = 1),
+  sel.method = "Gibbs"
 ){
-####### Parallel execution of model fitting
-library(parallel)
-# Calculate the number of cores
-no_cores <- detectCores() - 1
-
-LDAt <- get("LDA")
-# Initiate cluster
-cl <- makeCluster(no_cores)
-clusterExport(cl, "dtm") # Document term matrix
-clusterExport(cl, "burnin") # burnin default 1000
-clusterExport(cl, "iter") # iter default 1000
-clusterExport(cl, "keep") # keep default 50
-clusterExport(cl, "LDAt")
-models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
-
-stopCluster(cl)
-return(models)
+  ####### Parallel execution of model fitting
+  library(parallel)
+  # Calculate the number of cores
+  no_cores <- detectCores() - 1
+  
+  LDAt <- get("LDA")
+  # Initiate cluster
+  cl <- makeCluster(no_cores)
+  clusterExport(cl, "dtm") # Document term matrix
+  clusterExport(cl, "burnin") # burnin default 1000
+  clusterExport(cl, "iter") # iter default 1000
+  clusterExport(cl, "keep") # keep default 50
+  clusterExport(cl, "LDAt")
+  models <- parLapply(cl, ks, function(k) LDAt(dtm.new, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
+  
+  stopCluster(cl)
+  return(models)
 }
 #### END Parallel execution
 #models <- lapply(ks, function(k) LDA(dtm.new, k, method = "Gibbs", control = list(burnin = burnin, iter = iter, keep = keep)))
 
 ### Select the "best" model
-getBestModel <- function(
-  models = NULL
-  ){
-logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
-hm <- sapply(logLiks, function(h) harmonicMean(h))
-
-##edit by me obsolete
-k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
-#AICs = -2*hm + 2*k
-
-## plot the harmonic mean
-plot(ks, hm, type = "l")
-## select the optimal model
-opt <- models[which.max(hm)][[1]]
-return(opt)
+getBestModel <- function(models){
+  logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
+  hm <- sapply(logLiks, function(h) harmonicMean(h))
+  
+  ##edit by me obsolete
+  k = sapply(models, function(L) sum(length(L@beta) + length(L@gamma)))
+  #AICs = -2*hm + 2*k
+  
+  ## plot the harmonic mean
+  plot(ks, hm, type = "l")
+  ## select the optimal model
+  opt <- models[which.max(hm)][[1]]
+  return(opt)
 }
 # Extract the 'guts' of the optimal model
 
-getJSON <- function(opt = NULL){
-doc.id <- opt@wordassignments$i
-token.id <- opt@wordassignments$j
-topic.id <- opt@wordassignments$v
-vocab <- opt@terms
-
-# Get the phi matrix using LDAviz
-dat <- getProbs(token.id, doc.id, topic.id, vocab, K = max(topic.id), sort.topics = "byTerms")
-phi <- (dat$phi.hat)
-theta<- (dat$theta.hat)
-# NOTE TO SELF: these things have to be numeric vectors or else runVis() will break...add a check in check.inputs
-token.frequency <- as.numeric(table(token.id))
-topic.id <- dat$topic.id
-topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
-
-### Get doc.length for creating JSON
-lastDoc <- 1
-doc.length <- c()
-count <- 0
-for(i in 1:length(doc.id)){
-  if(doc.id[i]==lastDoc){
-    count <- count +1
-  }
-  else{
-    doc.length <- c(doc.length, count)
-    count <- 0
-    lastDoc <- doc.id[i]
+getJSON <- function(opt){
+  doc.id <- opt@wordassignments$i
+  token.id <- opt@wordassignments$j
+  topic.id <- opt@wordassignments$v
+  vocab <- opt@terms
+  
+  # Get the phi matrix using LDAviz
+  dat <- getProbs(token.id, doc.id, topic.id, vocab, K = max(topic.id), sort.topics = "byTerms")
+  phi <- (dat$phi.hat)
+  theta<- (dat$theta.hat)
+  # NOTE TO SELF: these things have to be numeric vectors or else runVis() will break...add a check in check.inputs
+  token.frequency <- as.numeric(table(token.id))
+  topic.id <- dat$topic.id
+  topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
+  
+  ### Get doc.length for creating JSON
+  lastDoc <- 1
+  doc.length <- c()
+  count <- 0
+  for(i in 1:length(doc.id)){
+    if(doc.id[i]==lastDoc){
+      count <- count +1
+    }
+    else{
+      doc.length <- c(doc.length, count)
+      count <- 0
+      lastDoc <- doc.id[i]
+    }
+    
+    if(i==length(doc.id)){  
+      doc.length <- c(doc.length,count)
+      count <- 0
+    }
   }
   
-  if(i==length(doc.id)){  
-    doc.length <- c(doc.length,count)
-    count <- 0
-  }
+  # Run the visualization locally using LDAvis
+  #z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
+  #with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
+  
+  #library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
+  
+  json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
+  return(json)
 }
 
-# Run the visualization locally using LDAvis
-#z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
-#with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
-
-#library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
-
-json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
-return(json)
-}
-#json <- with(z, createJSON(K=max(topic.id), phi, token.frequency, 
-#                           vocab, topic.proportion))
 ## TODO refactor to serve this in shinydashboard.
-serVis(json, out.dir="eyes_lda", open.browser = T)
+#serVis(json, out.dir="eyes_lda", open.browser = T)
