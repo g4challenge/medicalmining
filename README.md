@@ -38,3 +38,6 @@ or
 
 Note:
 	on a mac you have to install gsl (brew install gsl)
+
+Note:
+    Gitlab sometimes ... (just for online commit test...)
