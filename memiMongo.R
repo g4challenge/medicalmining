@@ -37,3 +37,16 @@ setAdditional <- function(word){
     print("not connected")
   }
 }
+
+setSimpleText <- function(title, text){
+  if(mongo.is.connected(mongo) == TRUE) {
+    collection <- "docs"
+    namespace <- paste(db, collection, sep=".")
+    
+    b <- mongo.bson.from.list(list(title=title, text=text))
+    ok <- mongo.insert(mongo, namespace, b)
+    
+  }else{
+    print("not connected")
+  }
+}
