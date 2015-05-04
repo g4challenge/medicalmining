@@ -52,10 +52,13 @@ createDTM <- function(
 
 # Fit models and find an optimal number of topics as suggested by Ben Marmick --
 # http://stackoverflow.com/questions/21355156/topic-models-cross-validation-with-loglikelihood-or-perplexity/21394092#21394092
-harmonicMean <- function(logLikelihoods, precision = 2000L) {
+harmonicMean <- function(
+  logLikelihoods, 
+  precision = 2000L
+) {
   llMed <- median(logLikelihoods)
   result <- as.double(llMed - log(mean(exp(-mpfr(logLikelihoods,
-                                       prec = precision) + llMed))))
+                                                 prec = precision) + llMed))))
   if(is.na(result)){
     return(0.0)
   }
@@ -87,16 +90,18 @@ getModels <- function(
   models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
   
   stopCluster(cl)
+  #### END Parallel execution
+  
   return(models)
 }
-#### END Parallel execution
 
 ### Select the "best" model
-getBestModel <- function(models, 
-                         burnin=1, 
-                         keep=50,
-                         ks = seq(20,28, by=1)
-                         ){
+getBestModel <- function(
+  models, 
+  burnin=1, 
+  keep=50,
+  ks = seq(20,28, by=1)
+){
   logLiks <- lapply(models, function(L)  L@logLiks[-c(1:(burnin/keep))])
   hm <- sapply(logLiks, function(h) harmonicMean(h))
   

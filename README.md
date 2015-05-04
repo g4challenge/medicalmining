@@ -20,7 +20,11 @@
 
 
 - install.packages("shiny")
+- install.packages("shinydashboard")
+
+
 - install.packages("topicmodels")
+- install.packages("servr")
 - install.packages("tm")
 - install.packages("Rmpfr")
 - install.packages("SnowballC")
@@ -30,16 +34,9 @@
 - install.packages("stringr")
 - install.packages("rmongodb")
 
-or
-
-
-- install.packages(c(shiny, topicmodels, tm, Rmpfr, SnowballC, RJSONIO, RCurl, XML, stringr, rmongodb))
-
 
 Note:
 	on a mac you have to install gsl (brew install gsl)
 
 Note:
     Gitlab sometimes ... (just for online commit test...)
-
-test

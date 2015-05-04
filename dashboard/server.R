@@ -1,7 +1,17 @@
 library(shiny)
 library(shinydashboard)
-source("../tmscript.R")
-load("../docs.file")
+
+
+test <- function(i){
+  print("test")
+  print(i)
+}
+
+
+test2 <- function(i){
+  print("test2")
+  print(i)
+}
 
 server <- function(input, output, session){
   output$messageMenu <- renderMenu({
@@ -45,7 +55,7 @@ server <- function(input, output, session){
     )    
     dropdownMenu(type = "notifications", .list=notifications)
   })
-    
+  
   output$taskMenu <- renderMenu({
     tasks <- list(
       taskItem(value = 90, color = "green",
@@ -110,14 +120,17 @@ server <- function(input, output, session){
     plot(dat)
   })
   
-  addResourcePath("library", "../eyes_lda")
-  output$testhtml <- renderUI({
   
-    source("../test.R")
+  output$testhtml <- renderUI({
+    
+    source("../tmscriptFacade.R")
+    
+    test2(input$toLower)
     
     
+    addResourcePath("library", "../data/eyes_lda")    
     tags$iframe(src="library/index.html", width=1024, height=768)
   })
   
-}
 
+}
