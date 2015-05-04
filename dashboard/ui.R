@@ -19,7 +19,7 @@ sidebar <- dashboardSidebar(
              checkboxInput("numbers", label = "Remove Number", value = TRUE),
              checkboxInput("stemming", label = "Stemming", value = TRUE),
              checkboxInput("weighting", label = "Weighting", value = TRUE),
-             textInput("stopwords", label = "Stopwords"),
+             selectInput('stopwords', label = 'stopwords', state.name, multiple=TRUE, selectize=TRUE),
              sliderInput("sparsity", "Sparsity ...", min = 0.0, max = 1, value = 0.99, step = 0.01)
     ), 
     menuItem("Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),

@@ -123,14 +123,11 @@ server <- function(input, output, session){
   
   output$testhtml <- renderUI({
     
-    source("../tmscriptFacade.R")
-    
-    test2(input$toLower)
-    
+    #    source("../tmscriptFacade.R")
     
     addResourcePath("library", "../data/eyes_lda")    
     tags$iframe(src="library/index.html", width=1024, height=768)
   })
   
-
+  
 }
