@@ -10,7 +10,15 @@ test <- function(i){
   print(i)
 }
 
-server <- function(input, output, session){  
+server <- function(input, output, session){
+  
+  
+  output$value <- renderPrint({ 
+    input$text
+    print("test")
+    
+  })
+  
   output$testhtml <- renderUI({
     
     #    source("../tmscriptFacade.R")

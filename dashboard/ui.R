@@ -1,5 +1,6 @@
 ## ui.R ##
 library(shinydashboard)
+source("../memiMongo.R")
 addResourcePath("lda_lib", "../data/eyes_lda")    
 
 
@@ -21,7 +22,10 @@ sidebar <- dashboardSidebar(
              checkboxInput("numbers", label = "Remove Number", value = TRUE),
              checkboxInput("stemming", label = "Stemming", value = TRUE),
              checkboxInput("weighting", label = "Weighting", value = TRUE),
-             selectInput('stopwords', label = 'stopwords', state.name, multiple=TRUE, selectize=TRUE),
+             
+             selectInput('stopwords', label = 'stopwords', getAllStopwords(), multiple=TRUE, selectize=TRUE),
+             
+             textInput("text", label = h3("Text input"), value = "Enter text..."),
              sliderInput("sparsity", "Sparsity ...", min = 0.0, max = 1, value = 0.99, step = 0.01)
     ), 
     menuItem("Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),
@@ -29,7 +33,9 @@ sidebar <- dashboardSidebar(
              numericInput("iterator", label = "Iterator", value = 100),
              numericInput("keep", label = "Keep", value = 50),  
              sliderInput("ks", label = "ks-Range", min = 0, max = 100, value = c(20, 80))           
-    )
+    ),
+    menuItem("LDAvis", tabName = "ldavis"),
+    menuItem("Streamgraph", tabName = "streamgraph")
   )
 )
 
@@ -37,12 +43,18 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   tags$head(HTML("<script type='text/javascript' src='lda_lib/d3.v3.js'></script>")),
   tags$head(HTML("<script type='text/javascript' src='lda_lib/ldavis.js'></script>")),
-  tags$head(HTML("<link rel='stylesheet' type='text/css' href='lda_lib/lda.css'>")),
-  tags$head(HTML("<script>var vis = new LDAvis('#lda', 'lda_lib/lda.json');</script>")),
   
   mainPanel(
-    tags$div(id="lda"),
-    streamgraphOutput('sg1')
+    tabItems(
+      tabItem("streamgraph",
+        streamgraphOutput('sg1')
+      ),
+      tabItem("ldavis",
+        tags$head(HTML("<link rel='stylesheet' type='text/css' href='lda_lib/lda.css'>")),
+        tags$head(HTML("<script>var vis = new LDAvis('#lda', 'lda_lib/lda.json');</script>")),
+        tags$div(id="lda")
+      )      
+    )
   )  
 )
 
