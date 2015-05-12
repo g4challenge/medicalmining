@@ -1,5 +1,7 @@
 ## ui.R ##
 library(shinydashboard)
+addResourcePath("lda_lib", "../data/eyes_lda")    
+
 
 # header
 header <-  dashboardHeader(title = "MeMi", 
@@ -33,14 +35,14 @@ sidebar <- dashboardSidebar(
 
 # main body
 body <- dashboardBody(
-  tags$head(HTML("<script type='text/javascript' src='js/test.js'></script>")),
+  tags$head(HTML("<script type='text/javascript' src='lda_lib/d3.v3.js'></script>")),
+  tags$head(HTML("<script type='text/javascript' src='lda_lib/ldavis.js'></script>")),
+  tags$head(HTML("<link rel='stylesheet' type='text/css' href='lda_lib/lda.css'>")),
+  tags$head(HTML("<script>var vis = new LDAvis('#lda', 'lda_lib/lda.json');</script>")),
   
   mainPanel(
-    streamgraphOutput('sg1'),
-    box(
-      title="Data", 
-      htmlOutput("testhtml")
-    )  
+    tags$div(id="lda"),
+    streamgraphOutput('sg1')
   )  
 )
 
