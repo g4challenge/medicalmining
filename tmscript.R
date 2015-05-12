@@ -30,7 +30,7 @@ createDTM <- function(
   corp <- VCorpus(VectorSource(docs.cleared))
   dtm <- DocumentTermMatrix(corp, control = dtm.control)
   #dim(dtm)
-  dtm <- removeSparseTerms(dtm, 0.99)
+  dtm <- removeSparseTerms(dtm, sparsity)
   #dim(dtm)
   
   #### Remove empty documents
