@@ -35,12 +35,11 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   fluidRow(
     box(
-      title="iframe - data", width = "1024px", height = "768px",
+      title="Data", width = "1024px", height = "768px",
       htmlOutput("testhtml")
     )  
-  )
-  
+  ),
+  tags$head(HTML("<script type='text/javascript' src='js/test.js'></script>"))
 )
-
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)
