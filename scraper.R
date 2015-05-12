@@ -58,6 +58,8 @@ scrapeContent <- function(url){
   ## introduce length control for text date and author
   text <- xpathSApply(PARSED, "//div[@class='messageContent']/article/blockquote", xmlValue)
   textcount <- length(text)
+  text <- doc <- paste(gsub("[\t\n]", "", x=text, useBytes = T), sep="", collapse = " NEXTENTRY ")
+  
   
   ### Attention order is incorrect
   if(entrycount < textcount){

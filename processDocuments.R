@@ -52,6 +52,7 @@ getAllDocumentsofThematic <- function(df.threads){
   for(j in 1:length(df.threads)){
     #j <- 4
     content <- scrapeContent(paste(url,"/" ,df.threads[2,j], sep=""))
+    
     doc <- getDocument(content)
     #print(doc)
     title.list <- c(title.list, doc[1])

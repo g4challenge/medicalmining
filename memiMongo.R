@@ -1,12 +1,20 @@
 library(rmongodb)
 
-host <- "127.0.0.1"
+host <- "192.3.88.248"
 db <- "MeMi"
 
 mongo <- mongo.create(host=host , db=db , username="")
 
-getDocumentList <- function(db, host){
-  cursor <- mongo.find(mongo, namespace, query)
+getDocumentList <- function(){
+  if(mongo.is.connected(mongo) == TRUE) {
+    collection <- "docs"
+    namespace <- paste(db, collection, sep=".")
+    
+    dist <- mongo.distinct(mongo, namespace, "text")
+    return(as.list(dist))
+  }else{
+    print("not connected")
+  }
 }
 
 #returns list of stopwords
@@ -38,12 +46,12 @@ setAdditional <- function(word){
   }
 }
 
-setSimpleText <- function(title, text){
+setSimpleText <- function(title, author, text, date){
   if(mongo.is.connected(mongo) == TRUE) {
     collection <- "docs"
     namespace <- paste(db, collection, sep=".")
     
-    b <- mongo.bson.from.list(list(title=title, text=text))
+    b <- mongo.bson.from.list(list(title=title, author=author, text=text, date=date))
     ok <- mongo.insert(mongo, namespace, b)
     
   }else{
