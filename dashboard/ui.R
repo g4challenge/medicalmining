@@ -33,13 +33,15 @@ sidebar <- dashboardSidebar(
 
 # main body
 body <- dashboardBody(
-  fluidRow(
+  tags$head(HTML("<script type='text/javascript' src='js/test.js'></script>")),
+  
+  mainPanel(
+    streamgraphOutput('sg1'),
     box(
-      title="Data", width = "1024px", height = "768px",
+      title="Data", 
       htmlOutput("testhtml")
     )  
-  ),
-  tags$head(HTML("<script type='text/javascript' src='js/test.js'></script>"))
+  )  
 )
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)

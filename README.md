@@ -40,3 +40,7 @@ Note:
 
 Note:
     Gitlab sometimes ... (just for online commit test...)
+
+
+- devtools::install_github("hrbrmstr/streamgraph")
+
