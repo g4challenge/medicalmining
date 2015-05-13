@@ -1,9 +1,14 @@
 library(shiny)
 library(shinydashboard)
+
 library(streamgraph)
-library(dplyr)
 packageVersion("streamgraph")
 library(dplyr)
+
+addResourcePath("lda_lib", "../data/eyes_lda")    
+source("../tmscriptFacade.R")
+load("../data/docs.file")
+
 
 test <- function(i){
   print("test")
@@ -11,23 +16,6 @@ test <- function(i){
 }
 
 server <- function(input, output, session){
-  
-  
-  output$value <- renderPrint({ 
-    input$text
-    print("test")
-    
-  })
-  
-  output$testhtml <- renderUI({
-    
-    #    source("../tmscriptFacade.R")
-    
-    addResourcePath("library", "../data/eyes_lda")    
-    tags$iframe(src="library/index.html", width=1300, height=800)
-  })
-  
-
   ggplot2::movies %>%
     select(year, Action, Animation, Comedy, Drama, Documentary, Romance, Short) %>%
     tidyr::gather(genre, value, -year) %>%
@@ -40,5 +28,30 @@ server <- function(input, output, session){
     sg_legend(show=TRUE, label="Genres: ") -> sg
   
   output$sg1 <- renderStreamgraph(sg)
-    
+  
+  output$test <- renderPrint(
+    list(
+      # dtm
+      toLower = input$toLower,
+      punctuation = input$punctuation,
+      numbers = input$numbers,
+      stemming = input$stemming,      
+      weighting = input$weighting,
+      
+      stopwords = input$stopwords,
+      words = input$words,
+      
+      # list of all real stopword whicht shoud be used
+      realstopwords = setdiff(append(stopwords("de"), input$words), input$stopwords),
+
+      sparsity = input$sparsity,
+      
+      # model
+      burning = input$burning,
+      iterator = input$iterator,
+      keep = input$keep,
+      ks = input$ks
+      
+      )
+  )
 }
