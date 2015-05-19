@@ -1,5 +1,11 @@
 # Medical mining
 
+## Timeline
+- 26.05: db insert document (Patti) and link it with Streamgraph (Tschigo)
+- 02.06: LDAvis speedup(Lukas) and link with frontend (Tschigo)
+
+-> 02.06 finished Project, 02.06 to 14.06 Final Report
+
 ## First setup:
 - Checkout the project
 - start the index.html in folder eyes_lda
@@ -40,3 +46,7 @@ Note:
 
 Note:
     Gitlab sometimes ... (just for online commit test...)
+
+
+- devtools::install_github("hrbrmstr/streamgraph")
+
