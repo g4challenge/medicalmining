@@ -58,8 +58,7 @@ scrapeContent <- function(url){
   ## introduce length control for text date and author
   text <- xpathSApply(PARSED, "//div[@class='messageContent']/article/blockquote", xmlValue)
   textcount <- length(text)
-  text <- doc <- paste(gsub("[\t\n]", "", x=text, useBytes = T), sep="", collapse = " NEXTENTRY ")
-  
+  text <- gsub("[\t\n]", "", x=text, useBytes = T)
   
   ### Attention order is incorrect
   if(entrycount < textcount){
@@ -68,6 +67,7 @@ scrapeContent <- function(url){
   }
   
   date <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/span[@class='DateTime']/@title")
+  names(date) <- NULL
   
   if(length(date) != entrycount){
     datestring <- xpathSApply(PARSED, "//span[@itemprop='dateCreated']/abbr[@class='DateTime']/@data-datestring")
@@ -85,10 +85,18 @@ scrapeContent <- function(url){
     }
   }
   }
+  
+  date <- as.POSIXct(date, tz = "CET", format="%d. %B %Y um %H:%M Uhr")
   relatedEntries <- xpathSApply(PARSED, "//div[@class='title']/a/@href")
-  return(list(title=title,
-              author=author,
-              text=text,
-              date=date,
-              relatedEntries=relatedEntries))
+  posts <-list()
+  for(i in 1:length(text)){
+    posts[[i]] <- list(author=author[i], text=text[i], date=date[i])
+  }
+  return(list(title=title, posts=posts))
+    
+#     list(title=title,
+#               author=author,
+#               text=text,
+#               date=date,
+#               relatedEntries=relatedEntries))
 }

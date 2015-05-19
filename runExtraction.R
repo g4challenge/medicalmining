@@ -13,9 +13,10 @@ df.threads <- data.frame(matrix(unlist(threads), nrow=2, byrow=T), stringsAsFact
 
 docs <- getAllDocumentsofThematic(df.threads[,1:10])
 
-for(i in length(df.threads)){
+for(i in 1:length(df.threads[,1:50])){
   result <- scrapeContent(paste(url,"/" ,df.threads[2,i], sep=""))
-  setSimpleText(title = result$title, author = result$author, text = paste(result$text, collapse=" "), date = result$date)
+  #setSimpleText(title = result$title, author = result$author, text = result$text, date = result$date)
+  setThread(result$title, result$posts)
 }
 
 # Just get a few documents

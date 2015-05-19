@@ -46,12 +46,40 @@ setAdditional <- function(word){
   }
 }
 
-setSimpleText <- function(title, author, text, date){
+setPost <- function(author, text, date){
   if(mongo.is.connected(mongo) == TRUE) {
-    collection <- "docs"
+    collection <- "post"
     namespace <- paste(db, collection, sep=".")
     
-    b <- mongo.bson.from.list(list(title=title, author=author, text=text, date=date))
+    b <- mongo.bson.from.list(list(author=author, text=text, date=date))
+    ok <- mongo.insert(mongo, namespace, b)
+    
+  }else{
+    print("not connected")
+  }
+}
+
+getPosts <- function(){
+  if(mongo.is.connected(mongo) == TRUE) {
+    collection <- "thread"
+    namespace <- paste(db, collection, sep=".")
+    #dist <- mongo.distinct(mongo, namespace)
+    
+    dist <- mongo.find.all(mongo, namespace, query =  '{"posts.date":{"$exists":1}}',fields = list('posts.text'=1, 'posts.date' = 1, '_id' = 0, 'topic'=1))
+    return(dist)
+  }else{
+    print("not connected")
+  }
+}
+
+setThread <- function(topic, post){
+  if(mongo.is.connected(mongo) == TRUE) {
+    collection <- "thread"
+    namespace <- paste(db, collection, sep=".")
+    
+    #subCollection <- mongo.bson.from.list(post)
+      #list(author=unlist(lapply(post, function(xl) xl$author)), text=unlist(lapply(post, function(xl) xl$text)), date=unlist(lapply(post, function(xl) xl$date))))
+    b <- mongo.bson.from.list(list(topic=topic, posts=post))
     ok <- mongo.insert(mongo, namespace, b)
     
   }else{
