@@ -29,17 +29,23 @@ sidebar <- dashboardSidebar(
              checkboxInput("stemming", label = "Stemming", value = TRUE),
              checkboxInput("weighting", label = "Weighting", value = TRUE),
              
-             selectInput('stopwords', label = 'Remove stopwords', stopwords("de"), multiple=TRUE, selectize=TRUE),
+             selectInput('stopwords', label = 'Remove stopwords', NULL, multiple=TRUE, selectize=TRUE),
              selectInput('words', label = 'Add stopword', dtm$dimnames$Terms, multiple=TRUE, selectize=TRUE),             
-             
+
              sliderInput("sparsity", "Sparsity ...", min = 0.0, max = 1, value = 0.99, step = 0.01)
     ), 
     menuItem("Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),
-             
              numericInput("burning", label = "Burning", value = 100),
              numericInput("iterator", label = "Iterator", value = 100),
-             numericInput("keep", label = "Keep", value = 50),  
-             sliderInput("ks", label = "ks-Range", min = 0, max = 100, value = c(20, 80))           
+             numericInput("keep", label = "Keep", value = 50),
+             
+             selectInput("ksFixpointRange", "Choose ks-input Method:", choices = c('Fixpoint'='1','Range'='2')),
+             
+             sliderInput("ksrange", label = "ks-Range", min = 0, max = 100, value = c(20, 80)),
+             numericInput("ksfix", label = "ks-fix", value = 20, min = 2, max = 2000,)
+             
+             
+             
     )
   )
 )
