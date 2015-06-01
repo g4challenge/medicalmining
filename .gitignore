@@ -3,4 +3,4 @@
 .RData
 .DS_Store
 test.R
-eyes_lda/
+data/eyes_lda/

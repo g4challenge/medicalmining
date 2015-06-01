@@ -16,6 +16,7 @@ test <- function(i){
 }
 
 server <- function(input, output, session){
+  
   ggplot2::movies %>%
     select(year, Action, Animation, Comedy, Drama, Documentary, Romance, Short) %>%
     tidyr::gather(genre, value, -year) %>%
@@ -25,9 +26,11 @@ server <- function(input, output, session){
     streamgraph("genre", "n", "year") %>%
     sg_axis_x(20) %>%
     sg_fill_brewer("PuOr") %>%
-    sg_legend(show=TRUE, label="Genres: ") -> sg
+    sg_legend(show=TRUE, label="Genres: ") -> sgtest
   
-  output$sg1 <- renderStreamgraph(sg)
+  output$sg1 <- renderStreamgraph(sgtest)
+  
+  output$sg2 <- renderStreamgraph(sgtest)
   
   output$test <- renderPrint(
     list(
@@ -52,7 +55,6 @@ server <- function(input, output, session){
       keep = input$keep,
       ks = input$ks
       
-
       )
   )
 }
