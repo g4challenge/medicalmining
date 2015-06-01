@@ -45,7 +45,7 @@ createJSON <- function(){
 
 # create html
 # removien eyes_lda folder is not needed
-#unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
-
-#serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
+# unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
+json <- createJSON()
+serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
 

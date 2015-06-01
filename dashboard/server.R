@@ -6,7 +6,7 @@ packageVersion("streamgraph")
 library(dplyr)
 
 addResourcePath("lda_lib", "../data/eyes_lda")    
-source("../tmscriptFacade.R")
+#source("../tmscriptFacade.R")
 load("../data/docs.file")
 
 
