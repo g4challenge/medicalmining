@@ -3,7 +3,7 @@ library(shinydashboard)
 library(streamgraph)
 source("../memiMongo.R")
 addResourcePath("lda_lib", "../data/eyes_lda")
-source("tmscriptFacade.R")
+#source("tmscriptFacade.R")
 
 
 # header

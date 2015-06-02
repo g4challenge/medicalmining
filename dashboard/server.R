@@ -3,6 +3,7 @@ library(shinydashboard)
 
 library(streamgraph)
 packageVersion("streamgraph")
+
 library(dplyr)
 
 addResourcePath("lda_lib", "../data/eyes_lda")    
@@ -30,7 +31,14 @@ server <- function(input, output, session){
   
   output$sg1 <- renderStreamgraph(sgtest)
   
-  output$sg2 <- renderStreamgraph(sgtest)
+  df = getPostsAsCSV()
+  df %>%
+    streamgraph("topic", "size", "date") %>%
+    sg_axis_x(1, "date", "%Y") %>%
+    sg_colors("PuOr")%>%
+    sg_legend(show=TRUE, label="Topic: ") -> sg
+  
+  output$sg2 <- renderStreamgraph(sg)
   
   output$test <- renderPrint(
     list(
