@@ -43,6 +43,6 @@ json <-getJSON(bestModel)
 # create html
 # removien eyes_lda folder is not needed
 # unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
-json <- createJSON()
-serVis(json, out.dir="data/eyes_lda", open.browser = TRUE)
+#json <- createJSON()
+#serVis(json, out.dir="data/eyes_lda", open.browser = TRUE)
 
