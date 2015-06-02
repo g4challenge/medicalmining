@@ -84,8 +84,8 @@ getPostsAsCSV <- function(){
       sizes <- c(sizes, sapply(gregexpr("\\W+", post$text), length) + 1)
     }
   }
-  df <- data.frame(topics, dates, sizes)
-  names(df) <- c("topic", "size", "date")
+  df <- data.frame(dates, topics, sizes)
+  names(df) <- c("date", "topic", "size")
   
   return(df)
 }
