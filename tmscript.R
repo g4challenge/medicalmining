@@ -65,6 +65,26 @@ harmonicMean <- function(
   return(result)
 }
 
+getCTM <- function(dtm,
+                   cg=list(iter.max=10,
+                           tol=10^-5),
+                   em=list(iter.max=10),
+                   var=list(iter.max=10),
+                   ks=seq(20,28, by=1)){
+  library(parallel)
+  # Calculate the number of cores
+  no_cores <- detectCores()-1
+  CTMt <- get("CTM")
+  # Initiate cluster
+  cl <- makeCluster(no_cores)
+  clusterExport(cl, "cg", envir = environment()) # burnin default 1000
+  clusterExport(cl, "em", envir = environment()) # iter default 1000
+  clusterExport(cl, "var", envir = environment()) # keep default 50
+  clusterExport(cl, "CTMt", envir = environment())
+  ctm <- parLapply(cl, ks, function(k) CTMt(dtm, k=ks, control = list(cg=cg, em=em, var=var)))
+}
+
+
 #TODO make Parameters dynamic
 getModels <- function(
   dtm,
@@ -77,9 +97,10 @@ getModels <- function(
   ####### Parallel execution of model fitting
   library(parallel)
   # Calculate the number of cores
-  no_cores <- detectCores() - 1
+  no_cores <- detectCores()-1
   
   LDAt <- get("LDA")
+
   # Initiate cluster
   cl <- makeCluster(no_cores)
   clusterExport(cl, "dtm") # Document term matrix
@@ -133,6 +154,21 @@ getJSON <- function(opt){
   topic.id <- dat$topic.id
   topic.proportion <- as.numeric(table(topic.id)/length(topic.id))
   
+  doc.length <- getDocLength(doc.id)
+  # Run the visualization locally using LDAvis
+  #library(parallel)
+  # Calculate the number of cores
+  #no_cores <- 8
+  
+  # Initiate cluster
+  #cl <- makeCluster(no_cores)
+  
+  json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
+  #stopCluster(cl)
+  return(json)
+}
+
+getDocLength <- function(doc.id){
   ### Get doc.length for creating JSON
   lastDoc <- 1
   doc.length <- c()
@@ -152,15 +188,7 @@ getJSON <- function(opt){
       count <- 0
     }
   }
-  
-  # Run the visualization locally using LDAvis
-  #z <- check.inputs(K=max(topic.id), W=max(token.id), phi, token.frequency, vocab, topic.proportion)
-  #with(z, runShiny(phi, token.frequency, vocab, topic.proportion))
-  
-  #library(shiny); runApp(system.file('shiny', 'hover', package='LDAtools'))
-  
-  json <- createJSON(phi, theta, doc.length, vocab, token.frequency)
-  return(json)
+  return(doc.length)
 }
 
 ## TODO refactor to serve this in shinydashboard.
