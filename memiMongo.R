@@ -1,4 +1,5 @@
 library(rmongodb)
+library(plyr) 
 
 host <- "192.3.88.248"
 db <- "MeMi"
@@ -64,12 +65,22 @@ getPosts <- function(){
     collection <- "thread"
     namespace <- paste(db, collection, sep=".")
     #dist <- mongo.distinct(mongo, namespace)
-    
     dist <- mongo.find.all(mongo, namespace, query =  '{"posts.date":{"$exists":1}}',fields = list('posts.text'=1, 'posts.date' = 1, '_id' = 0, 'topic'=1))
     return(dist)
   }else{
     print("not connected")
   }
+}
+
+getPostsAsCSV <- function(){
+  data <- getPosts()
+  out <- paste("topic", "date", "size", sep = ",", collapse = NULL)
+  for(topic in data){
+    for(post in topic$posts){
+      out <- paste0(out, "\n",topic$topic,",", post$date, ",", sapply(gregexpr("\\W+", post$text), length) + 1)
+    }
+  }
+  return(out)
 }
 
 setThread <- function(topic, post){
@@ -78,10 +89,12 @@ setThread <- function(topic, post){
     namespace <- paste(db, collection, sep=".")
     
     #subCollection <- mongo.bson.from.list(post)
-      #list(author=unlist(lapply(post, function(xl) xl$author)), text=unlist(lapply(post, function(xl) xl$text)), date=unlist(lapply(post, function(xl) xl$date))))
-    b <- mongo.bson.from.list(list(topic=topic, posts=post))
-    ok <- mongo.insert(mongo, namespace, b)
-    
+    #list(author=unlist(lapply(post, function(xl) xl$author)), text=unlist(lapply(post, function(xl) xl$text)), date=unlist(lapply(post, function(xl) xl$date))))
+    one <- mongo.find.one(mongo, namespace,  paste(c('{"topic":\"', topic, "\"}"), sep="", collapse=""))
+    if(length(one)==0){
+      b <- mongo.bson.from.list(list(topic=topic, posts=post))
+      ok <- mongo.insert(mongo, namespace, b)
+    }
   }else{
     print("not connected")
   }
