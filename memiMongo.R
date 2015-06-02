@@ -74,13 +74,15 @@ getPosts <- function(){
 
 getPostsAsCSV <- function(){
   data <- getPosts()
-  out <- paste("topic", "date", "size", sep = ",", collapse = NULL)
+  #out <- paste("topic", "date", "size", sep = ",", collapse = NULL)
+  df <- c("topic", "date", "size")
   for(topic in data){
     for(post in topic$posts){
-      out <- paste0(out, "\n",topic$topic,",", post$date, ",", sapply(gregexpr("\\W+", post$text), length) + 1)
+      df <- rbind(df,c(topic$topic, post$date, sapply(gregexpr("\\W+", post$text), length) + 1))
+      #out <- paste0(out, "\n",topic$topic,",", post$date, ",", sapply(gregexpr("\\W+", post$text), length) + 1)
     }
   }
-  return(out)
+  return(df)
 }
 
 setThread <- function(topic, post){
