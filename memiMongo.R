@@ -74,16 +74,22 @@ getPosts <- function(){
 
 getPostsAsCSV <- function(){
   data <- getPosts()
-  colHeader <- c("topic", "date", "size")
-  df <- data.frame(1,2,3)
+  #colHeader <- c("topic", "size", "date")
+  #df <- data.frame(1,2,3)
+  topics <- NULL
+  dates <- NULL
+  sizes <- NULL
   for(topic in data){
     for(post in topic$posts){
-      df <- rbind(df,c(topic$topic, sapply(gregexpr("\\W+", post$text), length) + 1, as.character(post$date)))
-      
+      #df <- rbind(df,c(topic$topic, sapply(gregexpr("\\W+", post$text), length) + 1, as.character(post$date)))
+      topics <- c(topics, topic$topic)
+      dates <- c(dates, as.character(post$date))
+      sizes <- c(sizes, sapply(gregexpr("\\W+", post$text), length) + 1)
     }
   }
-  names(df) <- colHeader
-  df <- df[-c(1),]
+  df <- data.frame(topics, dates, sizes)
+  #names(df) <- colHeader
+  #df <- df[-c(1),]
   return(df)
 }
 
