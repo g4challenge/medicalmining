@@ -66,8 +66,6 @@ shinyServer(
     
     output$sg <- renderStreamgraph(sg)
 
-    renderLDAvis()
-    
     output$test <- renderPrint(
       list(
         # dtm
