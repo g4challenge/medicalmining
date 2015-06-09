@@ -80,7 +80,7 @@ getPostsAsCSV <- function(){
   for(topic in data){
     for(post in topic$posts){
       topics <- c(topics, topic$topic)
-      dates <- c(dates, as.character(strptime(post$date, format="%Y-%m-%d")))
+      dates <- c(dates, as.Date(post$date, format="%Y-%m-%d"))
       sizes <- c(sizes, sapply(gregexpr("\\W+", post$text), length) + 1)
     }
   }
