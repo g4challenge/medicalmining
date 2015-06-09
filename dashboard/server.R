@@ -3,6 +3,7 @@ library(shinydashboard)
 
 library(streamgraph)
 packageVersion("streamgraph")
+
 library(dplyr)
 
 addResourcePath("lda_lib", "../data/eyes_lda")    
@@ -16,21 +17,14 @@ test <- function(i){
 }
 
 server <- function(input, output, session){
+  df = getPostsAsCSV()
+  df %>%
+    streamgraph("topic", "size", "date") %>%
+    sg_axis_x(1, "date", "%Y") %>%
+    sg_colors("PuOr")%>%
+    sg_legend(show=TRUE, label="Topic: ") -> sg
   
-  ggplot2::movies %>%
-    select(year, Action, Animation, Comedy, Drama, Documentary, Romance, Short) %>%
-    tidyr::gather(genre, value, -year) %>%
-    group_by(year, genre) %>%
-    tally(wt=value) %>%
-    ungroup %>%
-    streamgraph("genre", "n", "year") %>%
-    sg_axis_x(20) %>%
-    sg_fill_brewer("PuOr") %>%
-    sg_legend(show=TRUE, label="Genres: ") -> sgtest
-  
-  output$sg1 <- renderStreamgraph(sgtest)
-  
-  output$sg2 <- renderStreamgraph(sgtest)
+  output$sg <- renderStreamgraph(sg)
   
   output$test <- renderPrint(
     list(
