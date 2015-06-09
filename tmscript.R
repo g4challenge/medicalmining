@@ -100,7 +100,7 @@ getModels <- function(
   no_cores <- detectCores()-1
   
   LDAt <- get("LDA")
-
+  
   # Initiate cluster
   cl <- makeCluster(no_cores)
   clusterExport(cl, "dtm") # Document term matrix

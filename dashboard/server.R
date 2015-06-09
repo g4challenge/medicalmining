@@ -3,18 +3,11 @@ library(shinydashboard)
 
 library(streamgraph)
 packageVersion("streamgraph")
-
 library(dplyr)
 
 addResourcePath("lda_lib", "../data/eyes_lda")    
-#source("../tmscriptFacade.R")
+source("../tmscript.R")
 load("../data/docs.file")
-
-
-test <- function(i){
-  print("test")
-  print(i)
-}
 
 server <- function(input, output, session){
   df = getPostsAsCSV()
@@ -23,32 +16,43 @@ server <- function(input, output, session){
     sg_axis_x(1, "date", "%Y") %>%
     sg_colors("PuOr")%>%
     sg_legend(show=TRUE, label="Topic: ") -> sg
-  
   output$sg <- renderStreamgraph(sg)
   
-  output$test <- renderPrint(
+  # create dtm
+  dtm <-createDTM(
+    docs,
     list(
-      # dtm
-      toLower = input$toLower,
-      punctuation = input$punctuation,
-      numbers = input$numbers,
-      stemming = input$stemming,      
-      weighting = input$weighting,
-      
-      stopwords = input$stopwords,
-      words = input$words,
-      
-      # list of all real stopword whicht shoud be used
-      realstopwords = setdiff(append(stopwords("de"), input$words), input$stopwords),
-
-      sparsity = input$sparsity,
-      
-      # model
-      burning = input$burning,
-      iterator = input$iterator,
-      keep = input$keep,
-      ks = input$ks
-      
-      )
+      tolower = TRUE,
+      removePunctuation = TRUE,
+      removeNumbers = TRUE,
+      stopwords = stopwords("de"),
+      stemming = TRUE,
+      weighting = weightTf
+    ), 
+    sparsity = 0.99
   )
+  
+  # create models
+  models <- getModels(
+    dtm,
+    burnin = 1,
+    iter = 1,
+    keep = 50,
+    ks = seq(20, 28, by = 1),
+    sel.method = "Gibbs"  
+  )
+  
+  # select best model and create json
+  bestModel <- getBestModel(
+    models,
+    burnin = 1, 
+    keep = 50,
+    ks = seq(20, 28, by=1)
+  )
+ 
+  unlink("eyes_lda", recursive = TRUE, force = FALSE)
+  json <- getJSON(bestModel)
+  serVis(json, out.dir="eyes_lda", open.browser = FALSE)
+  
+   
 }
