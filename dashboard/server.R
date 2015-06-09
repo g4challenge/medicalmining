@@ -5,20 +5,18 @@ library(streamgraph)
 packageVersion("streamgraph")
 library(dplyr)
 
-addResourcePath("lda_lib", "../data/eyes_lda")    
 source("../tmscript.R")
 load("../data/docs.file")
 
-server <- function(input, output, session){
-  df = getPostsAsCSV()
-  df %>%
-    streamgraph("topic", "size", "date") %>%
-    sg_axis_x(1, "date", "%Y") %>%
-    sg_colors("PuOr")%>%
-    sg_legend(show=TRUE, label="Topic: ") -> sg
-  output$sg <- renderStreamgraph(sg)
-  
-  # create dtm
+test <- function(test){
+  print("test")
+  print(test)
+}
+
+
+renderLDAvis <- function(){
+  print("renderLDAvis")
+    # create dtm
   dtm <-createDTM(
     docs,
     list(
@@ -49,10 +47,51 @@ server <- function(input, output, session){
     keep = 50,
     ks = seq(20, 28, by=1)
   )
- 
+  
   unlink("eyes_lda", recursive = TRUE, force = FALSE)
   json <- getJSON(bestModel)
   serVis(json, out.dir="eyes_lda", open.browser = FALSE)
   
-   
 }
+
+
+shinyServer(
+  function(input, output){
+    df = getPostsAsCSV()
+    df %>%
+      streamgraph("topic", "size", "date") %>%
+      sg_axis_x(1, "date", "%Y") %>%
+      sg_colors("PuOr")%>%
+      sg_legend(show=TRUE, label="Topic: ") -> sg
+    
+    output$sg <- renderStreamgraph(sg)
+
+    renderLDAvis()
+    
+    output$test <- renderPrint(
+      list(
+        # dtm
+        toLower = input$toLower,
+        punctuation = input$punctuation,
+        numbers = input$numbers,
+        stemming = input$stemming,      
+        weighting = input$weighting,
+        
+        stopwords = input$stopwords,
+        words = input$words,
+        
+        # list of all real stopword whicht shoud be used
+        realstopwords = setdiff(append(stopwords("de"), input$words), input$stopwords),
+        
+        sparsity = input$sparsity,
+        
+        # model
+        burning = input$burning,
+        iterator = input$iterator,
+        keep = input$keep,
+        ks = input$ks
+      )
+    )
+    
+  }
+)
