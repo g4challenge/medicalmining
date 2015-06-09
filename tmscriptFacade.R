@@ -1,8 +1,8 @@
 #Test.R
 
 #if you are running it on it's own, change all paths
-source("../tmscript.R")
-load("../data/docs.file")
+source("tmscript.R")
+load("data/docs.file")
 
 # create dtm
 dtm <-createDTM(
@@ -36,13 +36,9 @@ bestModel <- getBestModel(
   ks = seq(20, 28, by=1)
 )
 
-json <-getJSON(bestModel)
-
-
-
-# create html
-# removien eyes_lda folder is not needed
-# unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
-#json <- createJSON()
-#serVis(json, out.dir="data/eyes_lda", open.browser = TRUE)
+## create html
+## removien eyes_lda folder is not needed
+ unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
+ json <- getJSON(bestModel)
+ serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
 
