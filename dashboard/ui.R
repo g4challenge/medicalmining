@@ -19,8 +19,8 @@ sidebar <- dashboardSidebar(
     label = "Search..."
   ),
   sidebarMenu(
-    menuItem("Debug", tabName = "testtab"),
     menuItem("LDAvis", tabName = "ldavis"),
+    menuItem("Debug", tabName = "testtab"),
     menuItem("Streamgraph Data", tabName = "streamgraph"),
     
     menuItem(
