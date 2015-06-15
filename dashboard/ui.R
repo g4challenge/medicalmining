@@ -62,10 +62,8 @@ sidebar <- dashboardSidebar(
       numericInput(
         "ksfix", label = "ks-fix", value = 20, min = 2, max = 2000
       )
-      
-      
-      
-    )
+    ),
+    menuItem(actionButton("renderLDAvis", "Generate LDAvis"))
   )
 )
 

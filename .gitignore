@@ -4,6 +4,5 @@
 .DS_Store
 test.R
 data/eyes_lda/
-data/eyes_lda/
-output.csv
 dashboard/eyes_lda/
+output.csv
