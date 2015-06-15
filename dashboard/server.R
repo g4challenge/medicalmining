@@ -31,14 +31,14 @@ shinyServer(function(input, output, session) {
       dtm <- createDTM(
         docs,
         list(
-          tolower = TRUE,
-          removePunctuation = TRUE,
-          removeNumbers = TRUE,
-          stopwords = stopwords("de"),
-          stemming = TRUE,
+          tolower = input$toLower,
+          removePunctuation = input$punctuation,
+          removeNumbers = input$numbers,
+          stopwords = setdiff(append(stopwords("de"), input$words), input$stopwords),
+          stemming = input$stemming,
           weighting = weightTf
         ), 
-        sparsity = 0.99
+        sparsity = input$sparsity
       )
       
             
@@ -47,9 +47,9 @@ shinyServer(function(input, output, session) {
       progress$inc(1/n, detail = paste("Doing part", i))
       models <- getModels(
         dtm,
-        burnin = 1,
-        iter = 1,
-        keep = 50,
+        burnin = input$burning,
+        iter = input$iterator,
+        keep = input$keep,
         ks = seq(20, 28, by = 1),
         sel.method = "Gibbs"  
       )
@@ -61,8 +61,8 @@ shinyServer(function(input, output, session) {
       progress$inc(1/n, detail = paste("Doing part", i))
       bestModel <- getBestModel(
         models,
-        burnin=1, 
-        keep=50,
+        burnin=input$burning, 
+        keep=input$keep,
         ks = seq(20, 28, by=1)
       )
       

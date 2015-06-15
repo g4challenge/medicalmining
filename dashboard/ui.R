@@ -47,8 +47,8 @@ sidebar <- dashboardSidebar(
     ),
     menuItem(
       "Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),
-      numericInput("burning", label = "Burning", value = 100),
-      numericInput("iterator", label = "Iterator", value = 100),
+      numericInput("burning", label = "Burning", value = 1),
+      numericInput("iterator", label = "Iterator", value = 1),
       numericInput("keep", label = "Keep", value = 50),
       
       selectInput(
