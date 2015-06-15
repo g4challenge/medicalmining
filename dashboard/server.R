@@ -18,15 +18,15 @@ shinyServer(function(input, output, session) {
     if (input$renderLDAvis > 0) {
       test("start spinner")
       tmsciptFasade(
-        tolower__ = TRUE,
-        removePunctuation__ = TRUE,
-        removeNumbers__ = TRUE,
-        stopwords__ = stopwords("de"),
-        stemming__ = TRUE,
-        sparsity__ = 0.99,
-        burnin__ = 1,
-        iter__ = 1,
-        keep__ = 50
+        tolower__ = input$toLower,
+        removePunctuation__ = input$punctuation,
+        removeNumbers__ = input$numbers,
+        stopwords__ = setdiff(append(stopwords("de"), input$words), input$stopwords),
+        stemming__ = input$stemming,
+        sparsity__ = input$sparsity,
+        burnin__ = input$burning,
+        iter__ = input$iterator,
+        keep__ = input$keep
       )      
       test("end spinner")
     }
