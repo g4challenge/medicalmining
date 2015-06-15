@@ -48,7 +48,7 @@ tmsciptFasade <- function(
   )
   
   ## create html
-  ## removien eyes_lda folder is not needed
+  ## remove eyes_lda folder is not needed
   unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
   json <- getJSON(bestModel)
   serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)

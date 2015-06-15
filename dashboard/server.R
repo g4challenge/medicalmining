@@ -5,29 +5,58 @@ library(streamgraph)
 packageVersion("streamgraph")
 library(dplyr)
 
-source("../tmscript.R")
-source("../tmscriptFacade.R")
-load("../data/docs.file")
+#source("../tmscript.R")
+#load("../data/docs.file")
 
 test <- function(test){
   print(test)
 }
 
 shinyServer(function(input, output, session) {
+
   observe({
     if (input$renderLDAvis > 0) {
       test("start spinner")
-      tmsciptFasade(
-        tolower__ = input$toLower,
-        removePunctuation__ = input$punctuation,
-        removeNumbers__ = input$numbers,
-        stopwords__ = setdiff(append(stopwords("de"), input$words), input$stopwords),
-        stemming__ = input$stemming,
-        sparsity__ = input$sparsity,
-        burnin__ = input$burning,
-        iter__ = input$iterator,
-        keep__ = input$keep
-      )      
+
+      
+      progress <- shiny::Progress$new()
+      on.exit(progress$close())
+      progress$set(message = "Making new LDAVis Model", value = 0)
+      
+      n <- 6
+      
+      # create dtm
+      i <- 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
+      # create models
+      i <- i + 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
+      # select best model and create json
+      i <- i + 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
+      # remove folder
+      i <- i + 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
+      
+      # generate json
+      i <- i + 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
+      
+      # serVis
+      i <- i + 1
+      progress$inc(1/n, detail = paste("Doing part", i))
+      Sys.sleep(1)
+
       test("end spinner")
     }
   })
