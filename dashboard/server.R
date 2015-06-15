@@ -28,35 +28,62 @@ shinyServer(function(input, output, session) {
       # create dtm
       i <- 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      dtm <- createDTM(
+        docs,
+        list(
+          tolower = TRUE,
+          removePunctuation = TRUE,
+          removeNumbers = TRUE,
+          stopwords = stopwords("de"),
+          stemming = TRUE,
+          weighting = weightTf
+        ), 
+        sparsity = 0.99
+      )
+      
+            
       # create models
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      models <- getModels(
+        dtm,
+        burnin = 1,
+        iter = 1,
+        keep = 50,
+        ks = seq(20, 28, by = 1),
+        sel.method = "Gibbs"  
+      )
+      
+            
+      
       # select best model and create json
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      bestModel <- getBestModel(
+        models,
+        burnin=1, 
+        keep=50,
+        ks = seq(20, 28, by=1)
+      )
+      
+      
       # remove folder
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
+      
       
       # generate json
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      json <- getJSON(bestModel)
+      
       
       # serVis
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      Sys.sleep(1)
-
+      serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
+      
       test("end spinner")
     }
   })

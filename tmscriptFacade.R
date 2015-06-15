@@ -16,7 +16,7 @@ tmsciptFasade <- function(
   keep__ = 50
   ){
   # create dtm
-  dtm <-createDTM(
+  dtm <- createDTM(
     docs,
     list(
       tolower = tolower__,
@@ -48,7 +48,7 @@ tmsciptFasade <- function(
   )
   
   ## create html
-  ## remove eyes_lda folder is not needed
+  ## removien eyes_lda folder is not needed
   unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
   json <- getJSON(bestModel)
   serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
