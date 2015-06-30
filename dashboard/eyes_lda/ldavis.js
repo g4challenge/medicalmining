@@ -1,5 +1,5 @@
 LDAvis = function(to_select, json_file) {
-
+    //var parentDiv = document.getElementById("lda");
     // This section sets up the logic for event handling
     var current_clicked = {
         what: "nothing",
@@ -580,14 +580,14 @@ LDAvis = function(to_select, json_file) {
 
 	// dynamically create the topic and lambda input forms at the top of the page:
         function init_forms(topicID, lambdaID, visID) {
-
+            
             // create container div for topic and lambda input:
 	    var inputDiv = document.createElement("div");
 	    inputDiv.setAttribute("id", "top");
 
             // insert the input container just before the vis:
             var visDiv = document.getElementById(visID);
-            document.body.insertBefore(inputDiv, visDiv);
+            visDiv.appendChild(inputDiv);
 
 	    // topic input container:
             var topicDiv = document.createElement("div");
