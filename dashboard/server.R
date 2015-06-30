@@ -85,7 +85,7 @@ server <- function(input, output, session) {
       #TODO umbauen
       #TODO javascript editieren
       #serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
-      write(json, "../data/eyes_lda/lda.json")
+      write(json, "eyes_lda/lda.json")
       test("end spinner")
     }
   })

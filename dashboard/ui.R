@@ -4,7 +4,7 @@ library(streamgraph)
 
 #source("../memiMongo.R")
 source("../tmscriptFacade.R")
-addResourcePath("lda_lib", "../data/eyes_lda")
+addResourcePath("lda_lib", "eyes_lda/")
 
 # header
 header <-  dashboardHeader(
