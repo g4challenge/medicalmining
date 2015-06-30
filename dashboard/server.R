@@ -1,9 +1,9 @@
 library(shiny)
 library(shinydashboard)
 
-library(streamgraph)
-packageVersion("streamgraph")
-library(dplyr)
+#library(streamgraph)
+#packageVersion("streamgraph")
+#library(dplyr)
 
 #source("../tmscript.R")
 #load("../data/docs.file")
@@ -12,7 +12,7 @@ test <- function(test){
   print(test)
 }
 
-shinyServer(function(input, output, session) {
+server <- function(input, output, session) {
 
   observe({
     if (input$renderLDAvis > 0) {
@@ -70,7 +70,7 @@ shinyServer(function(input, output, session) {
       # remove folder
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
+      #unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
       
       
       # generate json
@@ -82,20 +82,22 @@ shinyServer(function(input, output, session) {
       # serVis
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
-      serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
-      
+      #TODO umbauen
+      #TODO javascript editieren
+      #serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
+      write(json, "../data/eyes_lda/lda.json")
       test("end spinner")
     }
   })
   
-  df = getPostsAsCSV()
-  df %>%
-    streamgraph("topic", "size", "date") %>%
-    sg_axis_x(1, "date", "%Y") %>%
-    sg_colors("PuOr")%>%
-    sg_legend(show=TRUE, label="Topic: ") -> sg
-  
-  output$sg <- renderStreamgraph(sg)
+#   df = getPostsAsCSV()
+#   df %>%
+#     streamgraph("topic", "size", "date") %>%
+#     sg_axis_x(1, "date", "%Y") %>%
+#     sg_colors("PuOr")%>%
+#     sg_legend(show=TRUE, label="Topic: ") -> sg
+#   
+#   output$sg <- renderStreamgraph(sg)
   
   output$test <- renderPrint(
     list(
@@ -120,4 +122,4 @@ shinyServer(function(input, output, session) {
       ks = input$ks
     )
   )
-})
+}
