@@ -70,35 +70,22 @@ sidebar <- dashboardSidebar(
 )
 
 # main body
-body <- dashboardBody(tags$head(
-  HTML(
-    "<script type='text/javascript' src='lda_lib/d3.v3.js'></script>"
-  )
-),
-tags$head(
-  HTML(
-    "<script type='text/javascript' src='lda_lib/ldavis.js'></script>"
-  )
-),
-mainPanel(tabItems(
-  tabItem("testtab",
-          verbatimTextOutput('test')),
-  tabItem("streamgraph",
-          streamgraphOutput('sg')),
-  tabItem(
-    "ldavis",
-    tags$head(
-      HTML(
-        "<link rel='stylesheet' type='text/css' href='lda_lib/lda.css'>"
-      )
-    ),
-    tags$head(
-      HTML(
-        "<script>var vis = new LDAvis('#lda', 'lda_lib/lda.json');</script>"
-      )
-    ),
-    tags$div(id = "lda")
-  )
-)))
+body <- dashboardBody(
+  includeScript("www/d3.v3.js"),
+  includeScript("www/ldavis.js"),
+  mainPanel(tabItems(
+    tabItem("testtab",
+            verbatimTextOutput('test')),
+    tabItem("streamgraph",
+            streamgraphOutput('sg')),
+    tabItem(
+      "ldavis",
+      includeCSS("www/lda.css"),
+      tags$script(
+        "var vis = new LDAvis('#lda', 'lda_lib/lda.json');"
+      ),
+      tags$div(id = "lda")
+    )
+  )))
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)

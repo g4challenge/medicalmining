@@ -7,6 +7,7 @@ classifyDoc <- function(doc, phi){
   commonTokens <-intersect(doctokens$dimnames$Terms, dtm$dimnames$Terms)
   #should specify the real topic term distribution
   matchMatrix <- phi[,commonTokens]
+  ##Find the topics with the best term distribution for terms in this document
   Topics <- c()
   for(i in 1:length(commonTokens)){
     Topics <- c(Topics, which.max(matchMatrix[,i]))
