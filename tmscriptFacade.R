@@ -28,6 +28,8 @@ models <- getModels(
   sel.method = "Gibbs"  
 )
 
+models <- getCTM(dtm=dtm)
+
 # select best model and create json
 bestModel <- getBestModel(
   models,

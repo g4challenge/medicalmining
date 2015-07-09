@@ -77,11 +77,14 @@ getCTM <- function(dtm,
   CTMt <- get("CTM")
   # Initiate cluster
   cl <- makeCluster(no_cores)
+  clusterExport(cl, "dtm")
   clusterExport(cl, "cg", envir = environment()) # burnin default 1000
   clusterExport(cl, "em", envir = environment()) # iter default 1000
   clusterExport(cl, "var", envir = environment()) # keep default 50
   clusterExport(cl, "CTMt", envir = environment())
   ctm <- parLapply(cl, ks, function(k) CTMt(dtm, k=ks, control = list(cg=cg, em=em, var=var)))
+  stopCluster(cl)
+  return(ctm)
 }
 
 

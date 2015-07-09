@@ -86,6 +86,6 @@ body <- dashboardBody(
       ),
       tags$div(id = "lda")
     )
-  )))
+  ), width = 12))
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)
