@@ -13,7 +13,17 @@ test <- function(test){
 }
 
 server <- function(input, output, session) {
-
+  
+  output$results = renderPrint({
+    input$mydata
+  })
+  
+  observe({
+    input$mydata
+    stopword = input$mydata
+    session$sendCustomMessage(type = "myCallbackHandler", stopword)
+  })
+  
   observe({
     if (input$renderLDAvis > 0) {
       test("start spinner")

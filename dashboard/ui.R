@@ -84,8 +84,16 @@ body <- dashboardBody(
       tags$script(
         "var vis = new LDAvis('#lda', 'lda_lib/lda.json');"
       ),
+      tags$script("
+                  Shiny.addCustomMessageHandler('myCallbackHandler',
+                  function(stopword) {
+                  var selectize = $('select')[1].selectize;
+                  selectize.addItem(stopword, false);
+                  });
+                  "),
+      verbatimTextOutput("results"),
       tags$div(id = "lda")
-    )
+      )
   ), width = 12))
 
 ui <- dashboardPage(skin = "black", header, sidebar, body)

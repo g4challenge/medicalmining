@@ -603,7 +603,7 @@ LDAvis = function(to_select, data_or_file_name) {
             topicDiv.appendChild(topicLabel);
 
             var topicInput = document.createElement("input");
-            topicInput.setAttribute("style", "width: 50px");
+            topicInput.setAttribute("style", "width: "+ size*0.05 + "px");
             topicInput.type = "text";
             topicInput.min = "0";
             topicInput.max = K; // assumes the data has already been read in
@@ -629,6 +629,12 @@ LDAvis = function(to_select, data_or_file_name) {
         clear.setAttribute("style", "margin-left: 5px");
         clear.innerHTML = "Clear Topic";
             topicDiv.appendChild(clear);
+            
+            // InputHandler
+            document.getElementById('lda-topic-clear').onclick = function() {
+                               var number = Math.random();
+                               Shiny.onInputChange('mydata', number);
+                               };
 
             // lambda inputs
             //var lambdaDivLeft = 8 + mdswidth + margin.left + termwidth;
@@ -639,7 +645,7 @@ LDAvis = function(to_select, data_or_file_name) {
             inputDiv.appendChild(lambdaDiv);
 
             var lambdaZero = document.createElement("div");
-            lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: 220px; font-family: sans-serif; float: left");
+            lambdaZero.setAttribute("style", "padding: 5px; height: 20px; width: "+ lambdaDivWidth*0.45 + " px; font-family: sans-serif; float: left");
         lambdaZero.setAttribute("id", "lambdaZero");
             lambdaDiv.appendChild(lambdaZero);
         var xx = d3.select("#lambdaZero")
@@ -658,11 +664,11 @@ LDAvis = function(to_select, data_or_file_name) {
 
             var sliderDiv = document.createElement("div");
             sliderDiv.setAttribute("id", "sliderdiv");
-            sliderDiv.setAttribute("style", "padding: 5px; height: 40px; width: 250px; float: right; margin-top: -5px; margin-right: 10px");
+            sliderDiv.setAttribute("style", "padding: 5px; height: 40px; width: "+ lambdaDivWidth*0.5 + "px; float: right; margin-top: -5px; margin-right: 10px");
             lambdaDiv.appendChild(sliderDiv);
 
             var lambdaInput = document.createElement("input");
-            lambdaInput.setAttribute("style", "width: 250px; margin-left: 0px; margin-right: 0px");
+            lambdaInput.setAttribute("style", "width: "+ lambdaDivWidth*0.5 + "px; margin-left: 0px; margin-right: 0px");
             lambdaInput.type = "range";
             lambdaInput.min = 0;
             lambdaInput.max = 1;
@@ -675,17 +681,17 @@ LDAvis = function(to_select, data_or_file_name) {
             var lambdaLabel = document.createElement("label");
         lambdaLabel.setAttribute("id", "lamlabel");
             lambdaLabel.setAttribute("for", lambdaID);
-        lambdaLabel.setAttribute("style", "height: 20px; width: 60px; font-family: sans-serif; font-size: 14px; margin-left: 80px");
+        lambdaLabel.setAttribute("style", "height: 20px; width: "+ lambdaDivWidth*0.2 +"px; font-family: sans-serif; font-size: 14px; margin-left: "+ lambdaDivWidth *0.3+"px");
         lambdaLabel.innerHTML = "&#955 = <span id='" + lambdaID + "-value'>" + vis_state.lambda + "</span>";
             lambdaDiv.appendChild(lambdaLabel);
 
         // Create the svg to contain the slider scale:
         var scaleContainer = d3.select("#sliderdiv").append("svg")
-        .attr("width", 250)
+        .attr("width", size*0.25)
         .attr("height", 25);
 
             var sliderScale = d3.scale.linear()
-        .domain([0, 1])
+        .domain([0, 1]) //TODO
         .range([7.5, 242.5])  // trimmed by 7.5px on each side to match the input type=range slider:
         .nice();
 
@@ -1198,6 +1204,10 @@ LDAvis = function(to_select, data_or_file_name) {
         function term_on(term) {
             if (term == null) return null;
             term.style["fontWeight"] = "bold";
+            
+            Shiny.onInputChange('mydata', term.__data__.Term);
+            
+            
             var d = term.__data__
             var Term = d.Term;
             var dat2 = mdsData3.filter(function(d2) {
