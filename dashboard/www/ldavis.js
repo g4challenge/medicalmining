@@ -3,7 +3,7 @@
 /* MIT Licence */
 
 LDAvis = function(to_select, data_or_file_name) {
-
+     $(document).ready(function(){
     // This section sets up the logic for event handling
     var current_clicked = {
         what: "nothing",
@@ -22,7 +22,8 @@ LDAvis = function(to_select, data_or_file_name) {
         topic: 0,
         term: ""
     };
-
+    var size =   $( '#shiny-tab-ldavis').width();
+    
     // Set up a few 'global' variables to hold the data:
     var K, // number of topics
     R, // number of terms to display in bar chart
@@ -41,20 +42,20 @@ LDAvis = function(to_select, data_or_file_name) {
 
     // Set global margins used for everything
     var margin = {
-        top: 30,
-        right: 30,
-        bottom: 70,
-        left: 30
+        top: 0.025 * size,
+        right: 0.025 * size,
+        bottom: 0.05 * size,
+        left: 0.025 * size
     },
-    mdswidth = 530,
-    mdsheight = 530,
-    barwidth = 530,
-    barheight = 530,
-    termwidth = 90, // width to add between two panels to display terms
+    mdswidth = 0.4 * size;
+    mdsheight = 0.4 * size;
+    barwidth = 0.4 * size;
+    barheight = 0.4 * size;
+    termwidth = 0.15 * size; // width to add between two panels to display terms
     mdsarea = mdsheight * mdswidth;
     // controls how big the maximum circle can be
     // doesn't depend on data, only on mds width and height:
-    var rMax = 60;
+    var rMax = 0.05* size;
 
     // proportion of area of MDS plot to which the sum of default topic circle areas is set
     var circle_prop = 0.25;
@@ -587,7 +588,7 @@ LDAvis = function(to_select, data_or_file_name) {
             // create container div for topic and lambda input:
         var inputDiv = document.createElement("div");
         inputDiv.setAttribute("id", "top");
-        inputDiv.setAttribute("style", "width: 1210px"); // to match the width of the main svg element
+        inputDiv.setAttribute("style", "width: " + size + "px"); // to match the width of the main svg element
         document.getElementById(visID).appendChild(inputDiv);
 
         // topic input container:
@@ -1370,5 +1371,6 @@ LDAvis = function(to_select, data_or_file_name) {
     // },
 
     //debugger;
-
+  });
+  d3.select(window).on('resize', resize); 
 }
