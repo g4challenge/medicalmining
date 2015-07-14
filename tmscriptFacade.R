@@ -4,6 +4,9 @@
 source("../tmscript.R")
 load("../data/docs.file")
 
+debug <- T
+
+if(debug == F){
 # create dtm
 dtm <-createDTM(
   docs,
@@ -43,3 +46,5 @@ bestModel <- getBestModel(
 unlink("../data/eyes_lda", recursive = TRUE, force = FALSE)
 json <- getJSON(bestModel)
 serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
+
+}

@@ -24,47 +24,8 @@ sidebar <- dashboardSidebar(
     menuItem("LDAvis", tabName = "ldavis"),
     menuItem("Debug", tabName = "testtab"),
     menuItem("Streamgraph Data", tabName = "streamgraph"),
-    
-    menuItem(
-      "dtm Controll", tabName = "dtm",  icon = icon("cog", lib = "glyphicon"),
-      
-      checkboxInput("toLower", label = "To Lower", value = TRUE),
-      checkboxInput("punctuation", label = "Remove Punctuation", value = TRUE),
-      checkboxInput("numbers", label = "Remove Number", value = TRUE),
-      checkboxInput("stemming", label = "Stemming", value = TRUE),
-      checkboxInput("weighting", label = "Weighting", value = TRUE),
-      
-      selectInput(
-        'stopwords', label = 'Remove stopwords', NULL, multiple = TRUE, selectize =
-          TRUE
-      ),
-      selectInput(
-        'words', label = 'Add stopword', dtm$dimnames$Terms, multiple = TRUE, selectize =
-          TRUE
-      ),
-      
-      sliderInput(
-        "sparsity", "Sparsity ...", min = 0.0, max = 1, value = 0.99, step = 0.01
-      )
-    ),
-    menuItem(
-      "Model Controll", tabName = "Model", icon = icon("cog", lib = "glyphicon"),
-      numericInput("burning", label = "Burning", value = 1),
-      numericInput("iterator", label = "Iterator", value = 1),
-      numericInput("keep", label = "Keep", value = 50),
-      
-      selectInput(
-        "ksFixpointRange", "Choose ks-input Method:", choices = c('Fixpoint' = '1','Range' =
-                                                                    '2')
-      ),
-      
-      sliderInput(
-        "ksrange", label = "ks-Range", min = 0, max = 100, value = c(20, 80)
-      ),
-      numericInput(
-        "ksfix", label = "ks-fix", value = 20, min = 2, max = 2000
-      )
-    ),
+    menuItemOutput("dtmControl"),
+    menuItemOutput("modelControl"),
     menuItem(actionButton("renderLDAvis", "Generate LDAvis"))
   )
 )
