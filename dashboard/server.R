@@ -1,11 +1,13 @@
 library(shiny)
 library(shinydashboard)
 
+library(topicUtils)
+library(tm)
 #library(streamgraph)
 #packageVersion("streamgraph")
 #library(dplyr)
 
-#source("../tmscript.R")
+source("../tmscript.R")
 #load("../data/docs.file")
 
 test <- function(test){
@@ -105,32 +107,46 @@ server <- function(input, output, session) {
         sparsity = input$sparsity
       )
       
-      
       # create models
       i <- i + 1
-      progress$inc(1/n, detail = paste("Doing part", i))
-      models <- getModels(
-        dtm,
-        burnin = input$burning,
-        iter = input$iterator,
-        keep = input$keep,
-        ks = seq(20, 28, by = 1),
-        sel.method = "Gibbs"  
-      )
+      progress$inc(1/n, detail = paste("Calculating models", input$Type, "Step ", i))
+      print(c(input$burnin, input$iterator, input$keep, input$ks, input$Sampling))
+      
+      if(input$Type=="LDA"){
+        models <- getLDAModels(
+          dtm,
+          burnin = input$burnin,
+          iter = input$iterator,
+          keep = input$keep,
+          ks = input$ks,
+          sel.method = input$Sampling  
+        )
+      }
+      else if(input$Type=="CTM"){
+        print(input$ks)
+        models <- getCTMModels(
+          dtm,
+          ks = input$ks
+        )
+      }
+      else if(input$Type=="Pachinko"){
+        
+      }
       
       
+      print("finished")
       
       # select best model and create json
       i <- i + 1
-      progress$inc(1/n, detail = paste("Doing part", i))
+      progress$inc(1/n, detail = paste("Selecting Best Model Step ", i))
       bestModel <- getBestModel(
         models,
-        burnin=input$burning, 
+        burnin=input$burnin, 
         keep=input$keep,
-        ks = seq(20, 28, by=1)
+        ks = input$ks
       )
       
-      
+      #TODO refresh visualization
       # remove folder
       i <- i + 1
       progress$inc(1/n, detail = paste("Doing part", i))
@@ -180,7 +196,7 @@ server <- function(input, output, session) {
       sparsity = input$sparsity,
       
       # model
-      burning = input$burning,
+      burnin = input$burnin,
       iterator = input$iterator,
       keep = input$keep,
       ksControl= input$ksControl,
