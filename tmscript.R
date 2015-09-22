@@ -88,15 +88,16 @@ getCTM <- function(dtm,
 }
 
 
-#TODO make Parameters dynamic
-getModels <- function(
+getLDAModels <- function(
   dtm,
   burnin = 1,
   iter = 1,
   keep = 50,
+  var= list(iter.max=500, tol=10^-5),
+  em=  list(iter.max=1000, tol=10^-6),
   ks = seq(20, 28, by = 1),
   sel.method = "Gibbs"
-){
+){ 
   ####### Parallel execution of model fitting
   library(parallel)
   # Calculate the number of cores
@@ -111,8 +112,12 @@ getModels <- function(
   clusterExport(cl, "iter", envir = environment()) # iter default 1000
   clusterExport(cl, "keep", envir = environment()) # keep default 50
   clusterExport(cl, "LDAt", envir = environment())
-  models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
-  
+  if(sel.method == "VEM") {
+    models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method= sel.method, control=list(keep = keep, var=var, em=em)))
+  }
+  else{
+    models <- parLapply(cl, ks, function(k) LDAt(dtm, k, method = sel.method, control = list(burnin = burnin, iter = iter, keep = keep)))
+  }
   stopCluster(cl)
   #### END Parallel execution
   
