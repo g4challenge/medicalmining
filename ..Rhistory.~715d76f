@@ -1,0 +1,512 @@
+serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
+library(shiny)
+library(shinydashboard)
+library(streamgraph)
+packageVersion("streamgraph")
+library(dplyr)
+source("../tmscript.R")
+load("../data/docs.file")
+test <- function(test){
+print("test")
+print(test)
+}
+renderLDAvis <- function(){
+print("renderLDAvis")
+# create dtm
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+# create models
+models <- getModels(
+dtm,
+burnin = 1,
+iter = 1,
+keep = 50,
+ks = seq(20, 28, by = 1),
+sel.method = "Gibbs"
+)
+# select best model and create json
+bestModel <- getBestModel(
+models,
+burnin = 1,
+keep = 50,
+ks = seq(20, 28, by=1)
+)
+unlink("eyes_lda", recursive = TRUE, force = FALSE)
+json <- getJSON(bestModel)
+serVis(json, out.dir="eyes_lda", open.browser = FALSE)
+}
+shinyServer(
+function(input, output){
+df = getPostsAsCSV()
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ") -> sg
+output$sg <- renderStreamgraph(sg)
+output$test <- renderPrint(
+list(
+# dtm
+toLower = input$toLower,
+punctuation = input$punctuation,
+numbers = input$numbers,
+stemming = input$stemming,
+weighting = input$weighting,
+stopwords = input$stopwords,
+words = input$words,
+# list of all real stopword whicht shoud be used
+realstopwords = setdiff(append(stopwords("de"), input$words), input$stopwords),
+sparsity = input$sparsity,
+# model
+burning = input$burning,
+iterator = input$iterator,
+keep = input$keep,
+ks = input$ks
+)
+)
+}
+)
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+install.packages("XML")
+#Test.R
+#if you are running it on it's own, change all paths
+source("tmscript.R")
+load("data/docs.file")
+# create dtm
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+# create models
+models <- getModels(
+dtm,
+burnin = 1,
+iter = 1,
+keep = 50,
+ks = seq(20, 28, by = 1),
+sel.method = "Gibbs"
+)
+# select best model and create json
+bestModel <- getBestModel(
+models,
+burnin = 1,
+keep = 50,
+ks = seq(20, 28, by=1)
+)
+## create html
+## removien eyes_lda folder is not needed
+unlink("data/eyes_lda", recursive = TRUE, force = FALSE)
+json <- getJSON(bestModel)
+serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+getwd()
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+df <- read.csv("/Users/lukas/Downloads/tmp/stream2.csv")
+View(df)
+df %> streamgraph("date", "topic", "size")
+sg_legend(show=TRUE, label="Topic: ")
+alibrary(streamgraph)
+packageVersion("streamgraph")
+library(dplyr)
+df <- read.csv("/Users/lukas/Downloads/tmp/stream2.csv")
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+library(streamgraph)
+packageVersion("streamgraph")
+library(dplyr)
+df <- read.csv("/Users/lukas/Downloads/tmp/stream2.csv")
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+df <- getPostsAsCSV()
+library(streamgraph)
+packageVersion("streamgraph")
+library(dplyr)
+source("memiMongo.R")
+df <- getPostsAsCSV()
+write.csv(df, file="test.csv")
+View(df)
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+df <- read.csv("/Users/lukas/Downloads/tmp/stream2.csv")
+df %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+df2 <- read.csv("test.csv")
+View(df)
+View(df)
+View(df)
+View(df2)
+head(df2)
+head(df)
+str(df)
+str(df2)
+df2 <- df[, 1:1]
+df2 <- df[, -1]
+View(df)
+View(df2)
+df2 <- read.csv("test.csv")
+df2 <- df2[, -1]
+View(df2)
+df2 %>%
+streamgraph("topic", "size", "date") %>%
+sg_axis_x(1, "date", "%Y") %>%
+sg_colors("PuOr")%>%
+sg_legend(show=TRUE, label="Topic: ")
+?shiny::runApp()
+?runApp()
+shiny::runApp('dashboard')
+install.packages(c("boot", "chron", "class", "cluster", "crayon", "dplyr", "foreign", "htmlwidgets", "httr", "KernSmooth", "MASS", "Matrix", "nlme", "nnet", "packrat", "plyr", "rmarkdown", "rpart", "rversions", "scales", "shiny", "shinydashboard", "spatial", "stringi", "survival"))
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard', display.mode = "showcase")
+serVis()
+serVis(json, )
+ßserVis()
+?serVis()
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+getwd()
+?write
+write(x="123", file="../test.txt")
+shiny::runApp('dashboard')
+?unlink
+serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+serVis(json, out.dir="../data/eyes_lda", open.browser = FALSE)
+serVis(json, out.dir="/data/eyes_lda", open.browser = FALSE)
+serVis(json, out.dir="data/eyes_lda", open.browser = FALSE)
+serVis(json, out.dir="data/eyes_lda", open.browser = T)
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+library(shinydashboard)
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+source("../tmscript.R")
+source("tmscript.R")
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+models <- getCTM(dtm)
+models <- getCTM(dtm=dtm)
+source('~/ownCloud/documents/medicalmining/tmscript.R')
+models <- getCTM(dtm=dtm)
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+source('~/ownCloud/documents/medicalmining/tmscript.R')
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+models <- getCTM(dtm=dtm)
+library(LDAvis)
+models[[1]]
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?tabItem
+?mainPanel
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?selectInput
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?"LDA"
+?"LDA_Gibbscontrol-class"
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?uiOutput
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?selectInput
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+load("~/ownCloud/documents/medicalmining/.RData")
+shiny::runApp('dashboard')
+load("~/ownCloud/documents/medicalmining/.RData")
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?renderUI
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?renderMenu
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?eval
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+?menuItem
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+source('~/ownCloud/documents/medicalmining/tmscript.R')
+ctm <- getCTM(dtm, ks=20)
+getBestModel(ctm, 1,1)
+Rprof("dtm.out")
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+source('~/ownCloud/documents/medicalmining/tmscript.R')
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+Rprof(NULL
+)
+Rprof("dtm.out")
+summaryRprof("dtm.out")
+dtm <-createDTM(
+docs,
+list(
+tolower = TRUE,
+removePunctuation = TRUE,
+removeNumbers = TRUE,
+stopwords = stopwords("de"),
+stemming = TRUE,
+weighting = weightTf
+),
+sparsity = 0.99
+)
+Rprof(NULL
+)
+summaryRprof("dtm.out")
+Rprof("models.out")
+models <- getModels(
+dtm,
+burnin = 1,
+iter = 1,
+keep = 50,
+ks = seq(20, 28, by = 1),
+sel.method = "Gibbs"
+)
+Rprof(NULL
+)
+Rprof("models.out")
+models <- getModels(
+dtm,
+burnin = 100,
+iter = 100,
+keep = 50,
+ks = seq(20, 28, by = 1),
+sel.method = "Gibbs"
+)
+Rprof(NULL)
+summaryRprof("models.out")
+Rprof("lda.out")
+LDA(dtm, 25, method="Gibbs", control=list(burnin=50, iter=100, keep=50))
+Rprof(NULL)
+summaryRprof("lda.out")
+library(tmUtils)
+library(topicUtils)
+save(dtm, file="dtm")
+load(file = dtm)
+load(file = "dtm")
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+library(topicUtils)
+shiny::runApp('dashboard')
+??VCorpus
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+getLDAModels(dtm, burnin = 10, iter=10, keep=50, ks=20, sel.method = "Gibbs")
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+getLDAModels(dtm, 1,1, 50, 20, "VEM")
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+shiny::runApp('dashboard')
+getLDAModels(dtm, 1,1,50,20,"VEM")
+getLDAModels(dtm, burnin=1,iter=1,keep=50,ks=20,"VEM")
+getLDAModels(dtm, burnin=1,iter=1,keep=50,ks=20,"Gibbs")
+lda getLDAModels(dtm, burnin=1,iter=10,keep=50,ks=20,"Gibbs")
+lda <-  getLDAModels(dtm, burnin=1,iter=10,keep=50,ks=20,"Gibbs")
+terms(lda)
+library(topicUtils)
+lda <-  getLDAModels(dtm, burnin=1,iter=10,keep=50,ks=20,"Gibbs")
+terms(lda)
+topics(lds)
+topics(lda)
+topics(lda[[1]])
+terms(lda[[1]])
+?topics
+install.packages(c("base64enc", "cluster", "codetools", "curl", "httpuv", "lattice", "maps", "MASS", "mgcv", "PKI", "Rcpp", "rJava", "shiny"))

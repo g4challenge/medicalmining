@@ -25,7 +25,7 @@ sidebar <- dashboardSidebar(
     menuItem("Debug", tabName = "testtab"),
     menuItem("Streamgraph Data", tabName = "streamgraph"),
     menuItemOutput("dtmControl"),
-    menuItemOutput("modelControl"),
+    sidebarMenu(id="Topicmodel", menuItemOutput("modelControl")),
     menuItem(actionButton("renderLDAvis", "Generate LDAvis"))
   )
 )

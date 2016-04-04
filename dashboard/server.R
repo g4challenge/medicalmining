@@ -59,24 +59,23 @@ server <- function(input, output, session) {
     topicNcontrol <<- input$ksControl
     menuItem(
       "Model Control", tabName = "Model", icon = icon("cog", lib = "glyphicon"), selected = TRUE,
-      selectInput('Type', label="Type TM", list("LDA", "CTM", "Pachinko"), multiple=F, selectize=TRUE),
+      list(selectInput('Type', label="Type TM", list("LDA", "CTM", "Pachinko"), multiple=F, selectize=TRUE),
       selectInput('Sampling', label="Sampling", list("VEM", "Gibbs"), multiple=F, selectize=TRUE),
       numericInput("burnin", label = "Burnin", value = 1),
       numericInput("iterator", label = "Iterator", value = 1),
       numericInput("keep", label = "Keep", value = 50),
-      
       selectInput(
         "ksControl", "Choose ks-input Method:", choices = c('Fixpoint' = '1','Range' =
                                                               '2'),
         selected=topicNcontrol # wichtig um status zu erhalten!
       ),
       if(eval(!is.null(topicNcontrol) && topicNcontrol == 1)){
-        numericInput("ksfix", label = "ks-fix", value = 20, min = 2, max = 2000)
+        numericInput("ks", label = "ks-fix", value = 20, min = 2, max = 2000)
       }
       else{
-        sliderInput("ksrange", label = "ks-Range", min = 0, max = 100, value = c(20, 80))
+        sliderInput("ks", label = "ks-Range", min = 0, max = 100, value = c(20, 80))
       }
-    )
+    ))
   })
   
   

@@ -1,10 +1,15 @@
 library(rmongodb)
 library(plyr) 
 
-host <- "192.3.88.248"
-db <- "MeMi"
+#host <- "192.3.88.248"
+#db <- "MeMi"
 
-mongo <- mongo.create(host=host , db=db , username="")
+host<- "ds041673.mongolab.com:41673"
+db <- "medicalmining"
+username <- "rshell"
+password <- "sepa45Dd"
+
+mongo <- mongo.create(host=host , db=db , username=username, password=password)
 
 getDocumentList <- function(){
   if(mongo.is.connected(mongo) == TRUE) {

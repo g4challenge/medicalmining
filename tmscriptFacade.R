@@ -1,7 +1,7 @@
 #Test.R
 
 #if you are running it on it's own, change all paths
-source("../tmscript.R")
+#source("../tmscript.R")
 load("../data/docs.file")
 
 debug <- T
