@@ -1,3 +1,4 @@
+// as in ldavispackage, minor modifications done
 LDAvis = function(to_select, json_file) {
 
     // This section sets up the logic for event handling

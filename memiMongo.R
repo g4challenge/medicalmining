@@ -4,10 +4,10 @@ library(plyr)
 #host <- "192.3.88.248"
 #db <- "MeMi"
 
-host<- "ds041673.mongolab.com:41673"
-db <- "medicalmining"
-username <- "rshell"
-password <- "sepa45Dd"
+host<- ""
+db <- ""
+username <- ""
+password <- ""
 
 mongo <- mongo.create(host=host , db=db , username=username, password=password)
 

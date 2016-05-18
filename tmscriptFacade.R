@@ -1,4 +1,4 @@
-#Test.R
+#tmscriptFacade.R
 
 #if you are running it on it's own, change all paths
 #source("../tmscript.R")
