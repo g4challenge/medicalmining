@@ -1,7 +1,7 @@
 library(shiny)
 library(shinydashboard)
 
-library(topicUtils)
+#library(topicUtils)
 library(tm)
 #library(streamgraph)
 #packageVersion("streamgraph")
