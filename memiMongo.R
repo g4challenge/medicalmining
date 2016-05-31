@@ -1,9 +1,6 @@
 library(rmongodb)
 library(plyr) 
 
-#host <- "192.3.88.248"
-#db <- "MeMi"
-
 host<- ""
 db <- ""
 username <- ""
