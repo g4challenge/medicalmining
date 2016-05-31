@@ -1,6 +1,6 @@
 ## ui.R ##
 library(shinydashboard)
-library(streamgraph)
+#library(streamgraph)
 
 #source("../memiMongo.R")
 source("../tmscriptFacade.R")
@@ -37,8 +37,8 @@ body <- dashboardBody(
   mainPanel(tabItems(
     tabItem("testtab",
             verbatimTextOutput('test')),
-    tabItem("streamgraph",
-            streamgraphOutput('sg')),
+    tabItem("streamgraph"),
+            #streamgraphOutput('sg')),
     tabItem(
       "ldavis",
       includeCSS("www/lda.css"),
