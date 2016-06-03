@@ -1,20 +1,23 @@
 # Medical mining
 
-## Timeline
-- 26.05: db insert document (Pati) and link it with Streamgraph (Tschigo)
-- 02.06: LDAvis speedup(Lukas) and link with frontend (Tschigo)
-
--> 02.06 finished Project, 02.06 to 14.06 Final Report
+This tool allows you to create and control topic models. It works best with LDA and lets you visualize the results using LDAvis.
 
 ## First setup:
 - Checkout the project
-- start the index.html in folder eyes_lda
-- R code is not well structured (and pretty useless without an R IDE <http://rstudio.com>
-- visualization is very basic
-- integrate the more sophisticated version from sievert (LDAviz)
+- install all packages required
+- start the shiny application by run app
+
+## Import your data
+To import your own data, all it needs is to be a list of documents.
+
+**Minimal example**:
+
+    data <- list("this is my example text","here i talk about the weather")
+    
+Edit this in the file **tmscriptFacade.R**
 
 
-## Imports
+## Installation
 
 - on linux (ubuntu 14.04) apt-get install libxml2-dev libmpfr4 libmpfr-dev
 - install gnu mp 
@@ -38,15 +41,12 @@
 - install.packages("RCurl")
 - install.packages("XML")
 - install.packages("stringr")
-- install.packages("rmongodb")
+- install.packages("rmongodb") # (only if you want to use MongoDB)
 
 
 Note:
 	on a mac you have to install gsl (brew install gsl)
 
-Note:
-    Gitlab sometimes ... (just for online commit test...)
-
-
+You can also try to use the started streamgraph visualization to visualize topics along time, but this is under development.
 - devtools::install_github("hrbrmstr/streamgraph")
 
